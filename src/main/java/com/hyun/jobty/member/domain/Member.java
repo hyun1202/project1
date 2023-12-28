@@ -28,7 +28,9 @@ public class Member extends Timestamped implements UserDetails {
     private String pwd;
     private String nickname;
     private String roles;
+
     private LocalDateTime last_login_dt;
+    private LocalDateTime withdraw_dt;
 
     @Builder
     public Member(String id, String pwd, String nickname, String roles, LocalDateTime last_login_dt){
@@ -37,6 +39,10 @@ public class Member extends Timestamped implements UserDetails {
         this.nickname = nickname;
         this.roles = roles;
         this.last_login_dt = last_login_dt;
+    }
+
+    public void setWithdraw_dt(LocalDateTime withdraw_dt) {
+        this.withdraw_dt = withdraw_dt;
     }
 
     // 권한 반환
@@ -88,6 +94,8 @@ public class Member extends Timestamped implements UserDetails {
     // 계정 사용 가능 여부
     @Override
     public boolean isEnabled() {
+        if (this.withdraw_dt != null)
+            return false;
         return true;
     }
 

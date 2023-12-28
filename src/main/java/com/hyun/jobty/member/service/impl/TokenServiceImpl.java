@@ -53,6 +53,11 @@ public class TokenServiceImpl implements TokenService {
         return true;
     }
 
+    @Override
+    public void deleteToken(String memberId) {
+        refreshTokenService.deleteToken(memberId);
+    }
+
     public Token createAccessToken(String memberId){
         Member member = Member.builder()
                 .id(memberId)

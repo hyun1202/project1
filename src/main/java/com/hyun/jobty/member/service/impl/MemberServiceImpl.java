@@ -38,13 +38,32 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public boolean findDuplicateId(String id){
+        return memberRepository.existsById(id);
+    }
+
+    @Override
+    public Member reissuePassword(String pw){
+        return null;
+    }
+
+    @Override
     public Member login(MemberDto.LoginRequest loginRequest) {
         // id 체크 로직
         Member member = memberRepository.findById(loginRequest.getId()).orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
+
         // pw 체크 로직
         if (!bCryptPasswordEncoder.matches(loginRequest.getPwd(), member.getPwd())){
             throw new CustomException(ErrorCode.IncorrectPassword);
         }
+
+        // 만료 및 탈퇴 여부 확인
+        if (!member.isEnabled())
+            throw new CustomException(ErrorCode.AccountDisabled);
+
+        if (!member.isAccountNonExpired())
+            throw new CustomException(ErrorCode.AccountExpired);
+
         return member;
     }
 
@@ -61,6 +80,19 @@ public class MemberServiceImpl implements MemberService {
                 .roles(Role.USER.getValue())
                 .build();
         return memberRepository.save(member).getId();
+    }
+
+    @Override
+    public String logout(String id) {
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public String withdraw(String id) {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
+        member.setWithdraw_dt(LocalDateTime.now());
+        return member.getId();
     }
 
 

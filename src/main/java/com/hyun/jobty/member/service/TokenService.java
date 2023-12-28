@@ -19,4 +19,6 @@ public interface TokenService {
     Token createAccessToken(String memberId);
 
     boolean validAccessToken(String memberId, String accessToken);
+
+    void deleteToken(String memberId);
 }

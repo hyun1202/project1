@@ -57,12 +57,13 @@ public interface ResponseService {
      */
     CommonResult getFailResult();
 
+    CommonResult getFailResult(ErrorCode errorCode);
+    CommonResult getFailResult(int code, String msg);
     /**
      * 에러코드를 지정하여 실패 데이터 처리
      * <p>{@link com.hyun.jobty.global.advice.ExceptionAdvice}에서 예외 처리를 위해 이용</p>
      * @param errorCode 에러코드
      * @return 에러코드에 해당하는 실패 데이터 리턴
      */
-    CommonResult getFailResult(ErrorCode errorCode);
     HttpServletResponse setResponseError(HttpServletResponse response, int status, ErrorCode errorCode) throws IOException;
 }

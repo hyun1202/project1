@@ -4,31 +4,18 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ListResult<T> extends CommonResult{
-    private List<T> list;
-    private HashMap<String, T> datas;
-
-    public void setList(List<T> list){
-        this.list = list;
-    }
-
-    public List<T> getList(){
-        return list;
-    }
-
-    public void setDatas(HashMap<String, T> datas){
-        this.datas = datas;
-    }
+    private HashMap<String, T> data;
 
     public void setData(Object ...data){
-        this.datas = setHashMapData(data);
+        this.data = setHashMapData(data);
     }
 
     public void setData(String n1, T d1){
-        this.datas = setHashMapData(n1, d1);
+        this.data = setHashMapData(n1, d1);
     }
 
     public void setData(String n1, T d1, String n2, T d2) {
-        this.datas = setHashMapData(n1, d1, n2, d2);
+        this.data = setHashMapData(n1, d1, n2, d2);
     }
 
     private HashMap<String, T> setHashMapData(Object... input) {
@@ -40,7 +27,7 @@ public class ListResult<T> extends CommonResult{
         return map;
     }
 
-    public HashMap<String, T> getDatas(){
-        return datas;
+    public HashMap<String, T> getdata(){
+        return data;
     }
 }

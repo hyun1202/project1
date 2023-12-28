@@ -11,4 +11,6 @@ public interface RefreshTokenService {
     Token saveToken(String memberId, String accessToken, String refreshToken);
 
     String saveRefreshToken(String memberId, String refreshToken);
+
+    void deleteToken(String memberId);
 }

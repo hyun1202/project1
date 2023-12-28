@@ -1,5 +1,6 @@
 package com.hyun.jobty.global.security.configuration;
 
+import com.hyun.jobty.global.security.filter.ExceptionHandlerFilter;
 import com.hyun.jobty.global.security.filter.TokenAuthenticationFilter;
 import com.hyun.jobty.global.security.handler.AccessDeniedHandler;
 import com.hyun.jobty.global.security.handler.AuthenticationEntryPoint;
@@ -48,10 +49,11 @@ public class WebSecurityConfig {
                 .csrf((csrf) -> csrf.disable()) // csrf 비활성화
                 .cors((cors) -> cors.configurationSource(corsConfigurationSource()))    //cors 필터 등록
                 .addFilterBefore(new TokenAuthenticationFilter(tokenProvider, tokenService), UsernamePasswordAuthenticationFilter.class)  //토큰 필터 등록
+                .addFilterBefore(new ExceptionHandlerFilter(), TokenAuthenticationFilter.class)
                 // 접근 제한 설정
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/login/**", "/signup/**", "/api/token/**").permitAll()  // 해당하는 경로는 누구나 접근 가능
+                                .requestMatchers("/login/**", "/signup/**", "/api/token/**", "/checkId/**").permitAll()  // 해당하는 경로는 누구나 접근 가능
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api-docs/**", "/swagger-resources/**, ").permitAll()
                                 .anyRequest().authenticated() // 그 이외 경로는 인가는 필요하지 않으나 인증이 성공되어야 함.
                 )

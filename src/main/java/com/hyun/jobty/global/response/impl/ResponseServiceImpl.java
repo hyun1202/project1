@@ -25,7 +25,7 @@ public class ResponseServiceImpl implements ResponseService {
     @Override
     public <T> ListResult<T> getListResult(List<T> list) {
         ListResult<T> result = new ListResult<>();
-        result.setList(list);
+        result.setData("list", list);
         setSuccessResult(result);
         return result;
     }
@@ -33,7 +33,7 @@ public class ResponseServiceImpl implements ResponseService {
     @Override
     public <T> ListResult<T> getListResult(HashMap<String, T> datas) {
         ListResult<T> result = new ListResult<>();
-        result.setDatas(datas);
+        result.setData(datas);
         setSuccessResult(result);
         return result;
     }
@@ -57,6 +57,13 @@ public class ResponseServiceImpl implements ResponseService {
     public CommonResult getFailResult() {
         CommonResult result = new CommonResult();
         setFailResult(result);
+        return result;
+    }
+
+    @Override
+    public CommonResult getFailResult(int code, String msg) {
+        CommonResult result = new CommonResult();
+        setFailResult(result, code, msg);
         return result;
     }
 
@@ -100,5 +107,11 @@ public class ResponseServiceImpl implements ResponseService {
         result.setSuccess(false);
         result.setCode(errorCode.getCode());
         result.setMsg(errorCode.getMsg());
+    }
+
+    private void setFailResult(CommonResult result, int code, String msg){
+        result.setSuccess(false);
+        result.setCode(code);
+        result.setMsg(msg);
     }
 }

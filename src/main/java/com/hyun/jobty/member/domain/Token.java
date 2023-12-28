@@ -20,7 +20,8 @@ public class Token {
     public Token(){}
 
     @Builder
-    public Token(String accessToken, String refreshToken){
+    public Token(String memberId, String accessToken, String refreshToken){
+        this.memberId = memberId;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }

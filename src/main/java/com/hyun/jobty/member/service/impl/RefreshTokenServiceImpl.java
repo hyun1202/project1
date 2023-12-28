@@ -57,4 +57,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         token.setRefreshToken(refreshToken);
         return refreshTokenRepository.save(token).getRefreshToken();
     }
+
+    @Override
+    public void deleteToken(String memberId) {
+        Token token = refreshTokenRepository.findByMemberId(memberId).orElseThrow(()->new CustomException(ErrorCode.TokenExpired));
+        refreshTokenRepository.delete(token);
+    }
 }
