@@ -46,10 +46,10 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
         // 가져온 값의 접두사 제거
         String token = getAccessToken(authorizationHeader);
         // 토큰 검증 및 인증 정보 설정
-        log.info("token: {}", token);
+        log.debug("token: {}", token);
         if (tokenProvider.validToken(token)) {
             // 토큰 db와 검사
-            log.info("token_id: {}", tokenProvider.getMemberId(token));
+            log.debug("token_id: {}", tokenProvider.getMemberId(token));
             String tokenId = tokenProvider.getMemberId(token);
             if (tokenId != null) {
                 if (tokenService.validAccessToken(tokenId, token)) {
