@@ -40,4 +40,12 @@ public class SwaggerConfig {
                 .packagesToScan("com.hyun.jobty.member")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi getSettingApi(){
+        return GroupedOpenApi.builder()
+                .group("setting")
+                .packagesToScan("com.hyun.jobty.setting")
+                .build();
+    }
 }

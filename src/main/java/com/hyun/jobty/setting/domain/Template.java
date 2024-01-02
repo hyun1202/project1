@@ -1,0 +1,35 @@
+package com.hyun.jobty.setting.domain;
+
+import com.hyun.jobty.member.domain.Member;
+import com.hyun.jobty.member.domain.Timestamped;
+import jakarta.persistence.*;
+import lombok.*;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "template")
+@Entity
+@Getter
+public class Template extends Timestamped {
+    @Id
+    @Column(name = "template_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int templateSeq;
+
+    @OneToOne
+    @JoinColumn(name = "member_seq")
+    private Member member;
+    private String thumbnail;
+    @Column(name = "template_name")
+    private String name;
+    @Column(name = "template_keyword")
+    private String keyword;
+
+    @Builder
+    public Template(int templateSeq, Member member, String thumbnail, String name, String keyword){
+        this.templateSeq = templateSeq;
+        this.member = member;
+        this.thumbnail = thumbnail;
+        this.name = name;
+        this.keyword = keyword;
+    }
+}

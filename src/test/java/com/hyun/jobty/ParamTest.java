@@ -3,9 +3,15 @@ package com.hyun.jobty;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.HashMap;
 
 public class ParamTest {
+
+    public String test(String name){
+        return name;
+    }
 
     public HashMap<String, Object> setData(String name, Object data) {
         return setHashMapData(name, data);
@@ -33,5 +39,17 @@ public class ParamTest {
         Assertions.assertThat(m1.get(name1)).isEqualTo(data1);
         HashMap<String, Object> m2 = p.setData(name1, data1, name2, data2);
         Assertions.assertThat(m2.get(name2)).isEqualTo(data2);
+    }
+
+    @Test
+    void Test2(){
+        System.getenv("CONF_PATH");
+    }
+
+    @Test
+    void Test3() throws NoSuchMethodException {
+        Method method = ParamTest.class.getDeclaredMethod("test", String.class);
+        Parameter[] parameters = method.getParameters();
+        System.out.println(parameters[0].getName());
     }
 }
