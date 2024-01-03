@@ -59,6 +59,8 @@ public class TokenProvider{
     // 토큰 검증
     public boolean validToken(String token){
         try{
+            if (token == null || token.equals(""))
+                return false;
             Jwts.parser().verifyWith(jwtProperties.getSecretKey()).build().parseSignedClaims(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {

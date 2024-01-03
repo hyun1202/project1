@@ -18,6 +18,7 @@ public class ListResult<T> extends CommonResult{
         this.data = setHashMapData(n1, d1, n2, d2);
     }
 
+    @SuppressWarnings("unchecked")
     private HashMap<String, T> setHashMapData(Object... input) {
         HashMap<String, T> map = new HashMap<>();
         int size = input.length >> 1;
