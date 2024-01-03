@@ -1,5 +1,7 @@
 package com.hyun.jobty.global.configuration;
 
+import com.hyun.jobty.global.configuration.property.GlobalProperty;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +19,15 @@ import org.springframework.stereotype.Component;
  */
 @Configuration
 public class RedisConfig {
+    private final GlobalProperty.Redis redisProperty;
 
-    @Value("${spring.data.redis.host}")
+    RedisConfig(GlobalProperty.Redis redisProperty){
+        this.redisProperty = redisProperty;
+        this.host = redisProperty.getHost();
+        this.port = redisProperty.getPort();
+    }
+
     private String host;
-    @Value("${spring.data.redis.port}")
     private int port;
 
     @Bean
