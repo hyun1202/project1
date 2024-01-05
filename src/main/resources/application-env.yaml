@@ -40,3 +40,6 @@ springdoc:
   swagger-ui:
     enabled: false
 
+# file upload 경로 설정
+upload.path: /data/img
+

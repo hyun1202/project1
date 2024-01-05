@@ -1,15 +1,21 @@
 package com.hyun.jobty.setting.controller;
 
 import com.hyun.jobty.global.annotation.AccountValidator;
+import com.hyun.jobty.global.annotation.FileUpload;
+import com.hyun.jobty.global.response.ListResult;
 import com.hyun.jobty.global.response.ResponseService;
 import com.hyun.jobty.global.response.SingleResult;
+import com.hyun.jobty.global.util.FileUtil;
+import com.hyun.jobty.global.util.FileVo;
 import com.hyun.jobty.setting.dto.SettingDto;
 import com.hyun.jobty.setting.service.SettingService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -18,6 +24,7 @@ import java.util.List;
 public class SettingController {
     private final SettingService settingService;
     private final ResponseService responseService;
+    private final FileUtil fileUtil;
 
     @AccountValidator
     @GetMapping("/{id}/{domain}")
@@ -47,10 +54,12 @@ public class SettingController {
         return responseService.getSingleResult(res);
     }
 
+    @Operation(summary = "썸네일 업로드", description = "블로그 썸네일 업로드")
+    @FileUpload(path = "thumbnail")
     @AccountValidator
     @PostMapping(value = "favicon/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public SingleResult<String> uploadFaviconImage(@PathVariable("id") String id, SettingDto.FaviconReq req){
-        req.getMultipartFiles();
-        return responseService.getSingleResult("h");
+    public ListResult<FileVo> uploadFaviconImage(@PathVariable("id") String id, @ModelAttribute SettingDto.FaviconReq req){
+        List<FileVo> files = fileUtil.getFileInfo();
+        return responseService.getListResult(files);
     }
 }
