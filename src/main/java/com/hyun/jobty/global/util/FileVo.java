@@ -1,7 +1,5 @@
 package com.hyun.jobty.global.util;
 
-import lombok.Getter;
-
 /**
  * 서버에 파일 업로드 완료 후 파일 정보(저장 파일 경로, 파일 명 등) 저장
  * @param oriFileName 사용자가 업로드한 실제 파일 명
