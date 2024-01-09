@@ -5,6 +5,7 @@ import com.hyun.jobty.global.exception.CustomException;
 import com.hyun.jobty.global.exception.ErrorCode;
 import com.hyun.jobty.global.util.FileRequest;
 import com.hyun.jobty.global.util.FileUtil;
+import com.hyun.jobty.global.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -25,8 +26,6 @@ public class FileAspect {
 
     @Pointcut("@annotation(com.hyun.jobty.global.annotation.FileUpload)")
     private void fileUpload() {}
-    @Pointcut("@annotation(com.hyun.jobty.global.annotation.FileDownload)")
-    private void fileDownload() {}
 
     /**
      * {@link FileUpload} 어노테이션이 있으면 서버에 파일업로드 실행
@@ -48,37 +47,22 @@ public class FileAspect {
         Object[] args = joinPoint.getArgs();
         String[] paramNames = signature.getParameterNames();
         FileUpload fileUpload = signature.getMethod().getAnnotation(FileUpload.class);
+        // 데이터 세팅
         String pathId = fileUpload.path();
         String idParam = fileUpload.idParam();
         boolean idUsage = fileUpload.idUsage();
         String memberId = "";
-        if (getIndex(paramNames, idParam) != -1 && idUsage) {
-            memberId = (String) args[getIndex(paramNames, idParam)];
+
+        int idIndex = Util.findIndexArrayValue(paramNames, idParam);
+        if (idIndex != -1 && idUsage) {
+            memberId = (String) args[idIndex];
         }
 
-        FileRequest fileRequest = (FileRequest) args[getIndex(paramNames, fileParam)];
+        FileRequest fileRequest = (FileRequest) args[Util.findIndexArrayValue(paramNames, fileParam)];
         if (!fileUtil.uploadFiles(fileRequest.getMultipartFiles(), memberId, pathId)) {
             throw new CustomException(ErrorCode.FailedSaveFile);
         }
-        return joinPoint.proceed(args);
-    }
 
-    @Around("fileDownload()")
-    public Object fileDownload(ProceedingJoinPoint joinPoint) throws Throwable{
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        // 파라미터명 확인, 기본값은 id
-        Object[] args = joinPoint.getArgs();
-        String[] paramNames = signature.getParameterNames();
         return joinPoint.proceed(args);
-    }
-
-    private int getIndex(String[] names, String name){
-        int index = -1;
-        for (int i=0; i< names.length; i++){
-            index = i;
-            if (name.equals(names[i]))
-                return index;
-        }
-        return index;
     }
 }

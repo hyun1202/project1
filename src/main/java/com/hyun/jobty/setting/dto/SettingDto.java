@@ -65,4 +65,15 @@ public class SettingDto {
             super(multipartFiles);
         }
     }
+
+    @Getter
+    public static class FaviconRes {
+        private String favicon;
+
+        public FaviconRes(){}
+        @Builder
+        public FaviconRes(Setting setting){
+            this.favicon = setting.getFaviconImg();
+        }
+    }
 }

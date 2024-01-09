@@ -1,11 +1,13 @@
 package com.hyun.jobty.global.response;
 
 import com.hyun.jobty.global.exception.ErrorCode;
+import com.hyun.jobty.global.util.FileVo;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 /**
  * 응답 데이터 처리 클래스
@@ -17,33 +19,25 @@ import java.util.List;
  */
 public interface ResponseService {
     /**
+     * 파일 다운로드 데이터 처리
+     * @param file 파일
+     * @return ResponseEntity
+     */
+    ResponseEntity<Resource> getFileResponseEntity(FileVo file);
+    /**
      * 단건 데이터 처리
      * @param data 단건 데이터
      * @return 공통 코드, 메시지가 포함된 데이터 리턴
      */
-    <T> SingleResult<T> getSingleResult(T data);
-
-    /**
-     * 다건 데이터(리스트) 처리
-     * @param list 다건 데이터
-     * @return 공통 코드, 메시지가 포함된 데이터 리턴
-     */
-    <T> ListResult<T> getListResult(List<T> list);
-
-    /**
-     * 다건 데이터(HashMap) 처리
-     * @param datas 다건 데이터
-     * @return 공통 코드, 메시지가 포함된 데이터 리턴
-     */
-    <T> ListResult<T> getListResult(HashMap<String, T> datas);
+    <T> ResponseEntity<SingleResult<T>> getSingleResult(T data);
 
     /**
      * 다건 List 데이터 (HashMap) 처리
-     * @param data String, Object순으로 데이터 설정
      * @param <T>
+     * @param data String, Object순으로 데이터 설정
      * @return ListResult 데이터
      */
-    <T> ListResult<T> getListResult(Object... data);
+    <T> ResponseEntity<ListResult<T>> getListResult(Object... data);
 
     /**
      * 기본 성공 데이터 처리

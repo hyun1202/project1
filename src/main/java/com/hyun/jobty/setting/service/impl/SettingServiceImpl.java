@@ -2,6 +2,8 @@ package com.hyun.jobty.setting.service.impl;
 
 import com.hyun.jobty.global.exception.CustomException;
 import com.hyun.jobty.global.exception.ErrorCode;
+import com.hyun.jobty.global.util.FileUtil;
+import com.hyun.jobty.global.util.FileVo;
 import com.hyun.jobty.member.domain.Member;
 import com.hyun.jobty.member.service.MemberService;
 import com.hyun.jobty.setting.domain.Setting;
@@ -22,8 +24,7 @@ public class SettingServiceImpl implements SettingService {
 
     @Override
     public Setting findByDomain(String domain){
-        Setting setting = settingRepository.findByDomain(domain).orElseThrow(()->new CustomException(ErrorCode.FAIL));
-        return setting;
+        return settingRepository.findByDomain(domain).orElseThrow(()->new CustomException(ErrorCode.FAIL));
     }
 
     @Override
@@ -55,7 +56,7 @@ public class SettingServiceImpl implements SettingService {
     @Override
     public Setting updateDetailSetting(String id, SettingDto.AddSettingReq req) {
         Member member = memberService.findByMemberId(id);
-        Setting setting = settingRepository.findByMemberSeq(member.getSeq()).orElseThrow(()->new CustomException(ErrorCode.FAIL));
+        Setting setting = findByMemberSeq(member.getSeq());
         setting.setFaviconImg(req.getFavicon_img());
         setting.setBlogName(req.getBlog_name());
         setting.setBlogDescription(req.getBlog_description());
@@ -63,13 +64,23 @@ public class SettingServiceImpl implements SettingService {
         return setting;
     }
 
+    @Transactional
     @Override
-    public Setting saveFaviconImage(SettingDto.FaviconReq req) {
-        return null;
+    public Setting updateFaviconImage(String id, SettingDto.FaviconReq req) {
+        Member member = memberService.findByMemberId(id);
+        Setting setting = findByMemberSeq(member.getSeq());
+        setting.setFaviconImg(FileUtil.getSingleFileInfo().saveFilePath());
+        return setting;
     }
 
-//    public String saveImage(String file){
-//
-//    }
+    @Override
+    public FileVo findByFaviconImage(String id){
+        Member member = memberService.findByMemberId(id);
+        Setting setting = findByMemberSeq(member.getSeq());
+        return new FileVo("", "", setting.getFaviconImg(), "");
+    }
 
+    private Setting findByMemberSeq(int seq){
+        return settingRepository.findByMemberSeq(seq).orElseThrow(()->new CustomException(ErrorCode.FAIL));
+    }
 }
