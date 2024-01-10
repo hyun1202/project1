@@ -1,49 +1,65 @@
 package com.hyun.jobty.global.response.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hyun.jobty.global.exception.CustomException;
 import com.hyun.jobty.global.exception.ErrorCode;
 import com.hyun.jobty.global.response.*;
+import com.hyun.jobty.global.util.FileUtil;
+import com.hyun.jobty.global.util.FileVo;
+import com.hyun.jobty.global.util.Util;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @Service
 public class ResponseServiceImpl implements ResponseService {
 
+    private <T> ResponseEntity<T> getResponseEntity(T data){
+        return Util.responseEntityOf(data);
+    }
+
+    public ResponseEntity<Resource> getFileResponseEntity(FileVo file){
+        HttpHeaders headers = new HttpHeaders();
+        String oriFileName = "";
+        if (file.oriFileName().equals("") || file.oriFileName() == null){
+            oriFileName = Util.random() + "." + Util.getFileExtension(file.saveFilePath());
+        }
+        String encodedOriginalFileName = UriUtils.encode(oriFileName, StandardCharsets.UTF_8);
+        String contentDisposition = "attachment; filename=\"" + encodedOriginalFileName + "\"";
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition);
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        UrlResource resource;
+        try{
+            resource = new FileUtil().downloadFile(file);
+            return Util.responseEntityOf(resource, headers);
+        }catch (Exception e) {
+            throw new CustomException(ErrorCode.FAIL);
+        }
+    }
+
     @Override
-    public <T> SingleResult<T> getSingleResult(T data) {
+    public <T> ResponseEntity<SingleResult<T>> getSingleResult(T data) {
         SingleResult<T> result = new SingleResult<>();
         result.setData(data);
         setSuccessResult(result);
-        return result;
+        return this.getResponseEntity(result);
     }
 
     @Override
-    public <T> ListResult<T> getListResult(List<T> list) {
-        ListResult<T> result = new ListResult<>();
-        result.setData("list", list);
-        setSuccessResult(result);
-        return result;
-    }
-
-    @Override
-    public <T> ListResult<T> getListResult(HashMap<String, T> datas) {
-        ListResult<T> result = new ListResult<>();
-        result.setData(datas);
-        setSuccessResult(result);
-        return result;
-    }
-
-    @Override
-    public <T> ListResult<T> getListResult(Object... data){
+    public <T> ResponseEntity<ListResult<T>> getListResult(Object... data){
         ListResult<T> result = new ListResult<>();
         result.setData(data);
         setSuccessResult(result);
-        return result;
+        return this.getResponseEntity(result);
     }
 
     @Override

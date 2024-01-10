@@ -1,6 +1,7 @@
 package com.hyun.jobty.global.aop;
 
 import com.hyun.jobty.global.exception.CustomException;
+import com.hyun.jobty.global.exception.ErrorCode;
 import com.hyun.jobty.global.response.CommonResult;
 import com.hyun.jobty.global.response.ResponseService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,7 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.OK)
     public CommonResult processValidationError(MethodArgumentNotValidException exception) {
         BindingResult bindingResult = exception.getBindingResult();
-        String msg = "";
+        String msg = ErrorCode.FAIL.getMsg();
         StringBuilder builder = new StringBuilder();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
             builder.append("[");
@@ -46,7 +47,9 @@ public class ExceptionAdvice {
             builder.append(" 입력된 값: [");
             builder.append(fieldError.getRejectedValue());
             builder.append("]");
-            msg = fieldError.getDefaultMessage();
+            if (!fieldError.getField().equals("multipartFiles")) {
+                msg = fieldError.getDefaultMessage();
+            }
         }
         log.debug(builder.toString());
 

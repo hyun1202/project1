@@ -1,6 +1,5 @@
 package com.hyun.jobty.global.security.handler;
 
-import com.hyun.jobty.global.exception.CustomException;
 import com.hyun.jobty.global.exception.ErrorCode;
 import com.hyun.jobty.global.response.ResponseService;
 import jakarta.servlet.ServletException;

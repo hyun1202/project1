@@ -1,5 +1,6 @@
 package com.hyun.jobty.setting.dto;
 
+import com.hyun.jobty.global.util.FileRequest;
 import com.hyun.jobty.setting.domain.Setting;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -57,11 +58,22 @@ public class SettingDto {
     }
 
     @Getter
-    public static class FaviconReq{
-        private List<MultipartFile> multipartFiles;
+    public static class FaviconReq extends FileRequest {
+        private String fileName;
 
         public FaviconReq(List<MultipartFile> multipartFiles){
-            this.multipartFiles = multipartFiles;
+            super(multipartFiles);
+        }
+    }
+
+    @Getter
+    public static class FaviconRes {
+        private String favicon;
+
+        public FaviconRes(){}
+        @Builder
+        public FaviconRes(Setting setting){
+            this.favicon = setting.getFaviconImg();
         }
     }
 }
