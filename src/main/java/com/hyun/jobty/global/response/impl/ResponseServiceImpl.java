@@ -18,7 +18,6 @@ import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 @Service
 public class ResponseServiceImpl implements ResponseService {
@@ -84,9 +83,9 @@ public class ResponseServiceImpl implements ResponseService {
     }
 
     @Override
-    public CommonResult getFailResult(ErrorCode errorCode) {
+    public CommonResult getFailResult(CommonReason commonReason) {
         CommonResult result = new CommonResult();
-        setFailResult(result, errorCode);
+        setFailResult(result, commonReason);
         return result;
     }
 
@@ -107,22 +106,22 @@ public class ResponseServiceImpl implements ResponseService {
     // API 요청 성공 시 응답 모델을 성공 데이터로 세팅
     private void setSuccessResult(CommonResult result){
         result.setSuccess(true);
-        result.setCode(CommonResponse.SUCCESS.getCode());
-        result.setMsg(CommonResponse.SUCCESS.getMsg());
+        result.setCode(CommonCode.SUCCESS.getCode());
+        result.setMsg(CommonCode.SUCCESS.getMsg());
     }
 
     // API 요청 실패 시 응답 모델을 실패 데이터로 세팅
     private void setFailResult(CommonResult result){
         result.setSuccess(false);
-        result.setCode(CommonResponse.FAIL.getCode());
-        result.setMsg(CommonResponse.FAIL.getMsg());
+        result.setCode(CommonCode.FAIL.getCode());
+        result.setMsg(CommonCode.FAIL.getMsg());
     }
 
     // API 요청 실패 시 응답 모델을 실패 데이터로 세팅
-    private void setFailResult(CommonResult result, ErrorCode errorCode){
+    private void setFailResult(CommonResult result, CommonReason commonReason){
         result.setSuccess(false);
-        result.setCode(errorCode.getCode());
-        result.setMsg(errorCode.getMsg());
+        result.setCode(commonReason.getCode());
+        result.setMsg(commonReason.getMsg());
     }
 
     private void setFailResult(CommonResult result, int code, String msg){

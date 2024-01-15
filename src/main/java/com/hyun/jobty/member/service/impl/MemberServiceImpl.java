@@ -7,7 +7,6 @@ import com.hyun.jobty.member.domain.Role;
 import com.hyun.jobty.member.dto.MemberDto;
 import com.hyun.jobty.member.repository.MemberRepository;
 import com.hyun.jobty.member.service.MemberService;
-import com.hyun.jobty.member.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -48,12 +47,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member login(MemberDto.LoginRequest loginRequest) {
+    public Member login(MemberDto.LoginReq loginReq) {
         // id 체크 로직
-        Member member = memberRepository.findById(loginRequest.getId()).orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
+        Member member = memberRepository.findById(loginReq.getId()).orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
 
         // pw 체크 로직
-        if (!bCryptPasswordEncoder.matches(loginRequest.getPwd(), member.getPwd())){
+        if (!bCryptPasswordEncoder.matches(loginReq.getPwd(), member.getPwd())){
             throw new CustomException(ErrorCode.IncorrectPassword);
         }
 
@@ -69,13 +68,13 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public String save(MemberDto.AddMemberRequest addMemberRequest) {
-        if (memberRepository.findById(addMemberRequest.getId()).orElse(null) != null){
+    public String save(MemberDto.AddMemberReq addMemberReq) {
+        if (memberRepository.findById(addMemberReq.getId()).orElse(null) != null){
             throw new CustomException(ErrorCode.DuplicatedId);
         }
-        Member member = Member.builder().id(addMemberRequest.getId())
-                .pwd(bCryptPasswordEncoder.encode(addMemberRequest.getPwd()))
-                .nickname(addMemberRequest.getNickname())
+        Member member = Member.builder().id(addMemberReq.getId())
+                .pwd(bCryptPasswordEncoder.encode(addMemberReq.getPwd()))
+                .nickname(addMemberReq.getNickname())
                 .last_login_dt(LocalDateTime.now())
                 .roles(Role.USER.getValue())
                 .build();

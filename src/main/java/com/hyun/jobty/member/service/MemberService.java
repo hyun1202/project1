@@ -9,8 +9,8 @@ public interface MemberService {
     List<Member> getAllMembers();
     Member findByMemberSeq(int seq);
     Member findByMemberId(String id);
-    Member login(MemberDto.LoginRequest addMemberRequest);
-    String save(MemberDto.AddMemberRequest addMemberRequest);
+    Member login(MemberDto.LoginReq addMemberRequest);
+    String save(MemberDto.AddMemberReq addMemberReq);
     String logout(String id);
     String withdraw(String id);
     boolean findDuplicateId(String id);
