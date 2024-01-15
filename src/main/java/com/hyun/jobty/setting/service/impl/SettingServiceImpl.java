@@ -41,7 +41,7 @@ public class SettingServiceImpl implements SettingService {
         }
 
         Template template = Template.builder()
-                .templateSeq(1) //기본 템플릿 설정
+                .seq(1) //기본 템플릿 설정
                 .build();
 
         Setting setting = Setting.builder()

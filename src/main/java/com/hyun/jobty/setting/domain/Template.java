@@ -13,8 +13,7 @@ public class Template extends Timestamped {
     @Id
     @Column(name = "template_seq")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int templateSeq;
-
+    private int seq;
     @OneToOne
     @JoinColumn(name = "member_seq")
     private Member member;
@@ -25,8 +24,8 @@ public class Template extends Timestamped {
     private String keyword;
 
     @Builder
-    public Template(int templateSeq, Member member, String thumbnail, String name, String keyword){
-        this.templateSeq = templateSeq;
+    public Template(int seq, Member member, String thumbnail, String name, String keyword){
+        this.seq = seq;
         this.member = member;
         this.thumbnail = thumbnail;
         this.name = name;
