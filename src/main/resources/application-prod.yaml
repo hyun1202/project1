@@ -16,10 +16,6 @@ spring:
       hibernate: # hibernate property 설정
 #        format_sql: true
   #        show_sql: true
-  data:
-    redis:
-      host: localhost
-      port: 6379
 
   devtools:
     add-properties: false
@@ -35,10 +31,10 @@ jwt:
   issuer: 0157942@gmail.com
   secret_key: nqhMyX%^J%HNDw#2YTbNQkmNiMJKV6HsGh32QbqspYRllzyGI%JXrGpCob@9^FQfo0sNSMnSI5bQfQ7u^XPGNdpUhsHTfwqLUm24Z0uaMlRwY2YfZcXzn6nFL3x85YQUGEbTe6UFUAO806dYk#HwCm2Xe3cTuhl6WBxkRuqbJ7PU7PXSLy0NVbSFQA55RUDx^LKosc1TARI3x5nr2^sZst8gnbqNi%s23SDZbLN3nCwZv#@X8WqvTJ5GX^U1ZDSK
 
-# swagger disable
-springdoc:
-  swagger-ui:
-    enabled: false
+## swagger disable
+#springdoc:
+#  swagger-ui:
+#    enabled: false
 
 # file upload 경로 설정
 upload.path: /data/img

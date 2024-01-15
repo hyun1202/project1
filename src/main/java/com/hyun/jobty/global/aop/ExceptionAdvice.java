@@ -22,19 +22,19 @@ public class ExceptionAdvice {
     private final ResponseService responseService;
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected CommonResult defaultException(HttpServletRequest request){
         return responseService.getFailResult();
     }
 
     @ExceptionHandler(CustomException.class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected CommonResult customException(HttpServletRequest request, CustomException e){
-        return responseService.getFailResult(e.getErrorCode());
+        return responseService.getFailResult(e.getErrorCode().getCommonReason());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CommonResult processValidationError(MethodArgumentNotValidException exception) {
         BindingResult bindingResult = exception.getBindingResult();
         String msg = ErrorCode.FAIL.getMsg();

@@ -7,7 +7,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * 응답 데이터 처리 클래스
@@ -51,7 +50,7 @@ public interface ResponseService {
      */
     CommonResult getFailResult();
 
-    CommonResult getFailResult(ErrorCode errorCode);
+    CommonResult getFailResult(CommonReason commonReason);
     CommonResult getFailResult(int code, String msg);
     /**
      * 에러코드를 지정하여 실패 데이터 처리

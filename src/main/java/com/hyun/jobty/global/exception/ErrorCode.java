@@ -1,13 +1,14 @@
 package com.hyun.jobty.global.exception;
 
+import com.hyun.jobty.global.response.BaseCode;
+import com.hyun.jobty.global.response.CommonReason;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-
-public enum ErrorCode {
-    FAIL(-1, "실패했습니다.", "실패했습니다."),
+public enum ErrorCode implements BaseCode {
+    FAIL(-1, "실패했습니다.", "서버 에러"),
     // 계정 관련
     OperationNotAuthorized(6000, "로그인이 안되어있거나 만료된 토큰입니다.", "만료된 토큰입니다."),
     DuplicatedId(6001, "중복된 아이디입니다.", "중복된 아이디입니다."),
@@ -25,9 +26,19 @@ public enum ErrorCode {
     ExistsDomain(7000, "계정에 도메인이 존재합니다.", "이미 계정에 도메인이 있으므로 추가로 생성 불가합니다."),
     DuplicatedDomain(7001, "중복된 도메인입니다. 다른 도메인을 입력해주세요.", "중복된 도메인입니다. 다른 도메인을 입력해주세요."),
 
-    FailedSaveFile(8001, "파일 저장을 저장하지 못했습니다. 다른 파일로 시도해주세요.", "파일 저장에 실패하였습니다.");
+    FailedSaveFile(8001, "파일 저장에 실패했습니다. 다른 파일로 시도해주세요.", "파일 저장에 실패하였습니다.");
 
     private int code; // 에러 발생 코드
     private String msg; // 응답할 에러 발생 메시지
     private String remark; // 서버에서 확인할 에러 발생 메시지
+
+    @Override
+    public CommonReason getCommonReason() {
+        return CommonReason.builder()
+                .code(code)
+                .msg(msg)
+                .remark(remark)
+                .name(name())
+                .build();
+    }
 }
