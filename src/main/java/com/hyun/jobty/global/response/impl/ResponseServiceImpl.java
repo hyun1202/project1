@@ -18,6 +18,7 @@ import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Service
 public class ResponseServiceImpl implements ResponseService {
@@ -54,7 +55,7 @@ public class ResponseServiceImpl implements ResponseService {
     }
 
     @Override
-    public <T> ResponseEntity<ListResult<T>> getListResult(Object... data){
+    public <T> ResponseEntity<ListResult<T>> getListResult(List<T> data){
         ListResult<T> result = new ListResult<>();
         result.setData(data);
         setSuccessResult(result);

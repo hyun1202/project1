@@ -1,7 +1,8 @@
-package com.hyun.jobty.setting.domain;
+package com.hyun.jobty.setting.detail.domain;
 
 import com.hyun.jobty.member.domain.Member;
 import com.hyun.jobty.member.domain.Timestamped;
+import com.hyun.jobty.setting.template.domain.Template;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +16,7 @@ import java.util.List;
 public class Setting extends Timestamped {
     @Id
     private String domain;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_seq")
     private Member member;
     @Column(name = "favicon_img")
@@ -27,7 +28,7 @@ public class Setting extends Timestamped {
     @Column(name = "blog_keyword")
     private String blogKeyword;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "template_seq")
     private Template template;
     @Column(name = "template_use")

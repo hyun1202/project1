@@ -1,11 +1,12 @@
-package com.hyun.jobty.setting.service;
+package com.hyun.jobty.setting.detail.service;
 
 import com.hyun.jobty.global.util.FileVo;
-import com.hyun.jobty.setting.domain.Setting;
-import com.hyun.jobty.setting.dto.SettingDto;
+import com.hyun.jobty.setting.detail.dto.SettingDto;
+import com.hyun.jobty.setting.detail.domain.Setting;
 
 public interface SettingService {
-    Setting findByDomain(String domain);
+    Setting findBySetting(String domain);
+    String findByDomain(String id);
     Setting saveDomain(SettingDto.DomainReq req);
     Setting updateDetailSetting(String id, SettingDto.AddSettingReq req);
     Setting updateFaviconImage(String id, SettingDto.FaviconReq req);

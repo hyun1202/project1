@@ -1,4 +1,4 @@
-package com.hyun.jobty.setting.domain;
+package com.hyun.jobty.setting.template.domain;
 
 import com.hyun.jobty.member.domain.Member;
 import com.hyun.jobty.member.domain.Timestamped;
@@ -14,7 +14,7 @@ public class Template extends Timestamped {
     @Column(name = "template_seq")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int seq;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_seq")
     private Member member;
     private String thumbnail;

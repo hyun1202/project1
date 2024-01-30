@@ -66,7 +66,16 @@ public class SwaggerConfig {
     public GroupedOpenApi getSettingApi(@Qualifier("swagger") OperationCustomizer operationCustomizer){
         return GroupedOpenApi.builder()
                 .group("setting")
-                .packagesToScan("com.hyun.jobty.setting")
+                .packagesToScan("com.hyun.jobty.setting.detail")
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi getMenuApi(@Qualifier("swagger") OperationCustomizer operationCustomizer){
+        return GroupedOpenApi.builder()
+                .group("menu")
+                .packagesToScan("com.hyun.jobty.setting.menu")
                 .addOperationCustomizer(operationCustomizer)
                 .build();
     }

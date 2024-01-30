@@ -1,7 +1,7 @@
-package com.hyun.jobty.setting.repository;
+package com.hyun.jobty.setting.detail.repository;
 
 import com.hyun.jobty.member.domain.Member;
-import com.hyun.jobty.setting.domain.Setting;
+import com.hyun.jobty.setting.detail.domain.Setting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

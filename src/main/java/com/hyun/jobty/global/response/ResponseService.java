@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 응답 데이터 처리 클래스
@@ -31,12 +32,12 @@ public interface ResponseService {
     <T> ResponseEntity<SingleResult<T>> getSingleResult(T data);
 
     /**
-     * 다건 List 데이터 (HashMap) 처리
+     * 다건 List 데이터 처리
      * @param <T>
-     * @param data String, Object순으로 데이터 설정
+     * @param data List 형식 데이터
      * @return ListResult 데이터
      */
-    <T> ResponseEntity<ListResult<T>> getListResult(Object... data);
+    <T> ResponseEntity<ListResult<T>> getListResult(List<T> data);
 
     /**
      * 기본 성공 데이터 처리

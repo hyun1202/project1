@@ -1,12 +1,11 @@
-package com.hyun.jobty.setting.controller;
+package com.hyun.jobty.setting.detail.controller;
 
 import com.hyun.jobty.global.annotation.AccountValidator;
 import com.hyun.jobty.global.annotation.FileUpload;
-import com.hyun.jobty.global.response.ListResult;
 import com.hyun.jobty.global.response.ResponseService;
 import com.hyun.jobty.global.response.SingleResult;
-import com.hyun.jobty.setting.dto.SettingDto;
-import com.hyun.jobty.setting.service.SettingService;
+import com.hyun.jobty.setting.detail.dto.SettingDto;
+import com.hyun.jobty.setting.detail.service.SettingService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -25,7 +24,7 @@ public class SettingController {
     @GetMapping("/{id}/{domain}")
     public ResponseEntity<SingleResult<SettingDto.DomainRes>> findDomain(@PathVariable("id") String id, @PathVariable("domain") String domain){
         SettingDto.DomainRes res = SettingDto.DomainRes.builder()
-                .setting(settingService.findByDomain(domain))
+                .setting(settingService.findBySetting(domain))
                 .build();
         return responseService.getSingleResult(res);
     }
@@ -53,11 +52,11 @@ public class SettingController {
     @FileUpload(path = "thumbnail")
     @AccountValidator
     @PostMapping(value = "favicon/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ListResult<SettingDto.FaviconRes>> uploadFaviconImage(@PathVariable("id") String id, @ModelAttribute SettingDto.FaviconReq req){
+    public ResponseEntity<SingleResult<SettingDto.FaviconRes>> uploadFaviconImage(@PathVariable("id") String id, @ModelAttribute SettingDto.FaviconReq req){
         SettingDto.FaviconRes res = SettingDto.FaviconRes.builder()
                 .setting(settingService.updateFaviconImage(id, req))
                 .build();
-        return responseService.getListResult("thumbnail", res);
+        return responseService.getSingleResult(res);
     }
 
     @Operation(summary = "썸네일 다운로드", description = "블로그 썸네일 다운로드")

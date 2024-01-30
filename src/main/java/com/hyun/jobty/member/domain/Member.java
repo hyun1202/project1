@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -22,9 +21,9 @@ public class Member extends Timestamped implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_seq")
     private int seq;
-    @Column(name = "member_id", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String id;
-    @Column(name = "member_pwd")
+    @Column(name = "pwd")
     private String pwd;
     private String nickname;
     private String roles;

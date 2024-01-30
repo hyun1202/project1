@@ -1,4 +1,4 @@
-package com.hyun.jobty.setting.service.impl;
+package com.hyun.jobty.setting.detail.service.impl;
 
 import com.hyun.jobty.global.exception.CustomException;
 import com.hyun.jobty.global.exception.ErrorCode;
@@ -6,11 +6,11 @@ import com.hyun.jobty.global.util.FileUtil;
 import com.hyun.jobty.global.util.FileVo;
 import com.hyun.jobty.member.domain.Member;
 import com.hyun.jobty.member.service.MemberService;
-import com.hyun.jobty.setting.domain.Setting;
-import com.hyun.jobty.setting.domain.Template;
-import com.hyun.jobty.setting.dto.SettingDto;
-import com.hyun.jobty.setting.repository.SettingRepository;
-import com.hyun.jobty.setting.service.SettingService;
+import com.hyun.jobty.setting.template.domain.Template;
+import com.hyun.jobty.setting.detail.dto.SettingDto;
+import com.hyun.jobty.setting.detail.repository.SettingRepository;
+import com.hyun.jobty.setting.detail.domain.Setting;
+import com.hyun.jobty.setting.detail.service.SettingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,8 +23,13 @@ public class SettingServiceImpl implements SettingService {
     private final MemberService memberService;
 
     @Override
-    public Setting findByDomain(String domain){
+    public Setting findBySetting(String domain){
         return settingRepository.findByDomain(domain).orElseThrow(()->new CustomException(ErrorCode.FAIL));
+    }
+
+    @Override
+    public String findByDomain(String id) {
+        return findByMemberSeq(id).getDomain();
     }
 
     @Override
@@ -55,8 +60,7 @@ public class SettingServiceImpl implements SettingService {
     @Transactional
     @Override
     public Setting updateDetailSetting(String id, SettingDto.AddSettingReq req) {
-        Member member = memberService.findByMemberId(id);
-        Setting setting = findByMemberSeq(member.getSeq());
+        Setting setting = findByMemberSeq(id);
         setting.setFaviconImg(req.getFavicon_img());
         setting.setBlogName(req.getBlog_name());
         setting.setBlogDescription(req.getBlog_description());
@@ -67,20 +71,19 @@ public class SettingServiceImpl implements SettingService {
     @Transactional
     @Override
     public Setting updateFaviconImage(String id, SettingDto.FaviconReq req) {
-        Member member = memberService.findByMemberId(id);
-        Setting setting = findByMemberSeq(member.getSeq());
+        Setting setting = findByMemberSeq(id);
         setting.setFaviconImg(FileUtil.getSingleFileInfo().saveFilePath());
         return setting;
     }
 
     @Override
     public FileVo findByFaviconImage(String id){
-        Member member = memberService.findByMemberId(id);
-        Setting setting = findByMemberSeq(member.getSeq());
+        Setting setting = findByMemberSeq(id);
         return new FileVo("", "", setting.getFaviconImg(), "");
     }
 
-    private Setting findByMemberSeq(int seq){
-        return settingRepository.findByMemberSeq(seq).orElseThrow(()->new CustomException(ErrorCode.FAIL));
+    private Setting findByMemberSeq(String id){
+        Member member = memberService.findByMemberId(id);
+        return settingRepository.findByMemberSeq(member.getSeq()).orElseThrow(()->new CustomException(ErrorCode.FAIL));
     }
 }

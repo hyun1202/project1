@@ -14,6 +14,7 @@ spring:
     generate-ddl: false
     properties: # property 사용 설정
       hibernate: # hibernate property 설정
+      default_batch_fetch_size: 100 # n+1 query 방지(in절 사용)
 #        format_sql: true
   #        show_sql: true
 

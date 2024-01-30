@@ -1,7 +1,7 @@
-package com.hyun.jobty.setting.dto;
+package com.hyun.jobty.setting.detail.dto;
 
 import com.hyun.jobty.global.util.FileRequest;
-import com.hyun.jobty.setting.domain.Setting;
+import com.hyun.jobty.setting.detail.domain.Setting;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
