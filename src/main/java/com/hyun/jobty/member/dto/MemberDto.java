@@ -1,6 +1,7 @@
 package com.hyun.jobty.member.dto;
 
 import com.hyun.jobty.member.domain.Member;
+import com.hyun.jobty.member.domain.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -20,17 +21,21 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class MemberDto {
-    @Schema(description = "아이디", example = "test1")
+    @Schema(description = "아이디")
     private String id;
-    @Schema(description = "닉네임", example = "닉네임")
+    @Schema(description = "닉네임")
     private String nickname;
+    @Schema(description = "마지막 로그인 날짜")
     private LocalDateTime last_login_dt;
+    @Schema(description = "계정 상태 TEMPORARY: 임시, ACTIVATE: 활성화, DEACTIVATE: 탈퇴")
+    private String status;
 
     @Builder
     public MemberDto(Member member){
         this.id = member.getId();
         this.nickname = member.getNickname();
         this.last_login_dt = member.getLast_login_dt();
+        this.status = Status.values()[member.getStatus()].name();
     }
     /**
      * 로그인 요청 데이터
@@ -109,5 +114,38 @@ public class MemberDto {
             this.duplicate = duplicate;
             this.msg = msg;
         }
+    }
+
+    @Getter
+    public static class FindReq{
+        @Pattern(regexp = "[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}$", message = "아이디는 이메일 형태로 입력되어져야 합니다.")
+        @Schema(description = "이메일")
+        private String id;
+        public FindReq(String id){
+            this.id = id;
+        }
+
+    }
+
+    @Getter
+    public static class FindRes{
+        private String id;
+        private String msg;
+
+        public FindRes(){}
+
+        @Builder
+        public FindRes(String id, String msg){
+            this.id = id;
+            this.msg = msg;
+        }
+    }
+
+    @Getter
+    public static class Change{
+        @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[!@#$%^&*])[\\da-zA-Z!@#$%^&*]{8,20}", message = "비밀번호는 영문, 숫자, 특수문자 포함 8~20자로 입력해야 합니다.")
+        @Schema(description = "비밀번호(영문,숫자,특수문자 포함 8~20자)")
+        private String pwd;
+        public Change(){}
     }
 }

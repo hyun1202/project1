@@ -14,6 +14,6 @@ public interface MemberService {
     String logout(String id);
     String withdraw(String id);
     boolean findDuplicateId(String id);
-    Member reissuePassword(String pw);
+    Member tokenCheckAndUpdatePassword(String token, MemberDto.Change req);
     String emailCheckAndAccountActivate(String token);
 }

@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -104,11 +103,10 @@ public class MemberController {
             @ExampleObject(name = "사용 불가", value = "{\"duplicate\": true, \"msg\": \"중복된 아이디입니다.\"}"),
     }))
     public ResponseEntity<SingleResult<MemberDto.Check>> checkId(@PathVariable("id")
-                                                                 @Pattern(regexp = "[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}$", message = "아이디는 이메일 형태로 입력되어져야 합니다.")
-                                                                 String id){
+                                                                 MemberDto.FindReq req){
         boolean duplicate = false;
         String msg = CommonCode.AvailableId.getMsg();
-        if (memberService.findDuplicateId(id)) {
+        if (memberService.findDuplicateId(req.getId())) {
             // 아이디 중복
             duplicate = true;
             msg = CommonCode.DuplicatedId.getMsg();
@@ -125,5 +123,50 @@ public class MemberController {
     @GetMapping("signup")
     public ResponseEntity<SingleResult<String>> signupConfirm(@RequestParam String token){
         return responseService.getSingleResult(memberService.emailCheckAndAccountActivate(token));
+    }
+
+    @Operation(summary = "아이디 찾기", description = "아이디 찾기")
+    @GetMapping("find/id")
+    public ResponseEntity<SingleResult<MemberDto.FindRes>> findId(MemberDto.FindReq req){
+        String msg = CommonCode.EmailNotFound.getMsg();
+        if (memberService.findDuplicateId(req.getId())){
+            msg = CommonCode.EmailExists.getMsg();
+        }
+        MemberDto.FindRes res = MemberDto.FindRes.builder()
+                .id(req.getId())
+                .msg(msg)
+                .build();
+        return responseService.getSingleResult(res);
+    }
+
+    @Operation(summary = "계정 비밀번호 찾기", description = "아이디 체크 후 변경 링크 발송")
+    @GetMapping("find/pw")
+    public ResponseEntity<SingleResult<MemberDto.FindRes>> findPassword(MemberDto.FindReq req){
+        String msg = CommonCode.SendConfirmEMail.getMsg();
+        if (!memberService.findDuplicateId(req.getId())){
+            msg = CommonCode.EmailNotFound.getMsg();
+        }
+
+        // 메일 발송
+        String token = tokenService.createConfirmToken(req.getId());
+        Mail mail = Mail.builder()
+                .receiverMail(req.getId())
+                .subject("Jobty 이메일 계정 인증")
+                .body("안녕하세요. Jobty입니다. 비밀번호 변경을 위해 아래 링크를 클릭해주세요.")
+                .url("chg?token="+token)
+                .build();
+        mailSenderService.send(mail);
+
+        MemberDto.FindRes res = MemberDto.FindRes.builder()
+                .id(req.getId())
+                .msg(msg)
+                .build();
+        return responseService.getSingleResult(res);
+    }
+
+    @Operation(summary = "계정 비밀번호 변경", description = "토큰 값의 ID에 해당하는 비밀번호 변경")
+    @PostMapping("chg/{token}")
+    public ResponseEntity<SingleResult<String>> changePassword(@PathVariable String token, @RequestBody MemberDto.Change req){
+        return responseService.getSingleResult(memberService.tokenCheckAndUpdatePassword(token, req).getId());
     }
 }

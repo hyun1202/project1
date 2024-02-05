@@ -51,6 +51,10 @@ public class Member extends Timestamped implements UserDetails {
         this.last_login_dt = last_login_dt;
     }
 
+    public void updatePassword(String pwd){
+        this.pwd = pwd;
+    }
+
     // 권한 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

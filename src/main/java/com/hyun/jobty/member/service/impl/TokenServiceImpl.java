@@ -72,6 +72,11 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
+    public String createConfirmToken(String memberId) {
+        return confirmTokenService.createToken(memberId);
+    }
+
+    @Override
     public void deleteConfirmToken(String token) {
         confirmTokenService.deleteToken(token);
     }

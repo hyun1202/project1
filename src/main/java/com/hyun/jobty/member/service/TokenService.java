@@ -25,6 +25,7 @@ public interface TokenService {
     ConfirmToken checkConfirmToken(String token);
 
     String createConfirmToken(String memberId, int seq);
+    String createConfirmToken(String memberId);
 
     void deleteConfirmToken(String token);
 }

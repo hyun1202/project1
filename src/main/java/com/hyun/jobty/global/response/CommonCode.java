@@ -10,6 +10,10 @@ public enum CommonCode implements BaseCode{
     FAIL(-1, "실패하였습니다.", "실패하였습니다."),
     AvailableId(1000, "사용 가능한 아이디입니다.", "중복된 아이디가 없습니다."),
     DuplicatedId(1001, "중복된 아이디입니다.", "중복된 아이디입니다."),
+    EmailNotFound(1002, "해당하는 이메일을 찾을 수 없습니다.", "해당하는 이메일을 찾을 수 없습니다."),
+    EmailExists(1003, "가입되어있는 이메일입니다.", "가입되어있는 이메일입니다."),
+    SendConfirmEMail(1004, "해당 아이디로 확인 메일 발송하였습니다. 메일을 확인해주세요.", "해당 아이디로 확인 메일 발송하였습니다. 메일을 확인해주세요."),
+
     ;
 
     private int code;

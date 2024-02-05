@@ -28,6 +28,15 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
         return confirmTokenRepository.save(token).getToken();
     }
 
+    @Override
+    public String createToken(String memberId) {
+        ConfirmToken token = ConfirmToken.builder()
+                .token(Util.random(1, 32))
+                .userId(memberId)
+                .build();
+        return confirmTokenRepository.save(token).getToken();
+    }
+
 
     @Override
     public void deleteToken(String token) {

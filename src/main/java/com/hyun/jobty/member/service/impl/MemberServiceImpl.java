@@ -46,8 +46,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member reissuePassword(String pw){
-        return null;
+    @Transactional
+    public Member tokenCheckAndUpdatePassword(String token, MemberDto.Change req){
+        String id = tokenService.checkConfirmToken(token).getUserId();
+        Member member = findByMemberId(id);
+        member.updatePassword(bCryptPasswordEncoder.encode(req.getPwd()));
+        tokenService.deleteConfirmToken(token);
+        return member;
     }
 
     @Override
