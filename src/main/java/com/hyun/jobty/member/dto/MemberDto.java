@@ -58,8 +58,8 @@ public class MemberDto {
     @Getter
     public static class AddMemberReq {
         @NotNull
-        @Pattern(regexp = "^[a-z0-9]{4,20}", message = "아이디는 4~20자로 입력해야 합니다.")
-        @Schema(description = "아이디(4~20자)")
+        @Pattern(regexp = "[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}$", message = "아이디는 이메일 형태로 입력되어져야 합니다.")
+        @Schema(description = "이메일")
         private String id;
         @NotNull
         @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[!@#$%^&*])[\\da-zA-Z!@#$%^&*]{8,20}", message = "비밀번호는 영문, 숫자, 특수문자 포함 8~20자로 입력해야 합니다.")

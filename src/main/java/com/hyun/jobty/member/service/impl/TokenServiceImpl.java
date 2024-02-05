@@ -3,8 +3,10 @@ package com.hyun.jobty.member.service.impl;
 import com.hyun.jobty.global.exception.CustomException;
 import com.hyun.jobty.global.exception.ErrorCode;
 import com.hyun.jobty.global.security.jwt.TokenProvider;
+import com.hyun.jobty.member.domain.ConfirmToken;
 import com.hyun.jobty.member.domain.Member;
 import com.hyun.jobty.member.domain.Token;
+import com.hyun.jobty.member.service.ConfirmTokenService;
 import com.hyun.jobty.member.service.RefreshTokenService;
 import com.hyun.jobty.member.service.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class TokenServiceImpl implements TokenService {
     private final TokenProvider tokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final ConfirmTokenService confirmTokenService;
 
     public Token reissueAccessToken(String refreshToken){
         String memberId = tokenProvider.getMemberId(refreshToken);
@@ -56,6 +59,21 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public void deleteToken(String memberId) {
         refreshTokenService.deleteToken(memberId);
+    }
+
+    @Override
+    public ConfirmToken checkConfirmToken(String token) {
+        return confirmTokenService.findByToken(token);
+    }
+
+    @Override
+    public String createConfirmToken(String memberId, int seq) {
+        return confirmTokenService.createToken(memberId, seq);
+    }
+
+    @Override
+    public void deleteConfirmToken(String token) {
+        confirmTokenService.deleteToken(token);
     }
 
     public Token createAccessToken(String memberId){

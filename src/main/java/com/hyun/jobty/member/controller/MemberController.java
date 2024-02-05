@@ -2,10 +2,13 @@ package com.hyun.jobty.member.controller;
 
 import com.hyun.jobty.global.annotation.AccountValidator;
 import com.hyun.jobty.global.exception.ErrorCode;
+import com.hyun.jobty.global.mail.model.Mail;
+import com.hyun.jobty.global.mail.service.MailSenderService;
 import com.hyun.jobty.global.response.CommonCode;
 import com.hyun.jobty.global.response.ResponseService;
 import com.hyun.jobty.global.response.SingleResult;
 import com.hyun.jobty.global.swagger.annotation.ApiErrorCode;
+import com.hyun.jobty.member.domain.Member;
 import com.hyun.jobty.member.dto.MemberDto;
 import com.hyun.jobty.member.dto.TokenDto;
 import com.hyun.jobty.member.service.MemberService;
@@ -17,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberService memberService;
     private final ResponseService responseService;
+    private final MailSenderService mailSenderService;
     private final TokenService tokenService;
 
     @Operation(summary = "계정 정보 확인", description = "로그인 계정에 해당하는 계정 정보 리턴 (토큰 값과 id값 비교 후 실행)")
@@ -58,19 +63,30 @@ public class MemberController {
         return responseService.getSingleResult(result);
     }
 
-    @Operation(summary = "회원가입", description = "회원가입, 성공 시 가입된 아이디 리턴")
+    @Operation(summary = "회원가입", description = "회원가입, 임시 계정 생성 후 해당 ID로 인증 메일 발송(30분동안 유효)")
     @ApiErrorCode(value = ErrorCode.DuplicatedId)
     @PostMapping("/signup")
     public ResponseEntity<SingleResult<String>> signup(@RequestBody @Valid MemberDto.AddMemberReq req){
-        return responseService.getSingleResult(memberService.save(req));
+        // 1. 계정 생성(임시)
+        Member member = memberService.save(req);
+        // 2. 토큰 생성
+        String token = tokenService.createConfirmToken(member.getId(), member.getSeq());
+        // 3. 메일 발송
+        Mail mail = Mail.builder()
+                .receiverMail(req.getId())
+                .subject("Jobty 이메일 계정 인증")
+                .body("안녕하세요. Jobty입니다. 계정 생성을 위해 아래 링크를 클릭하여 메일 주소를 인증해주세요.")
+                .url("signup?token="+token)
+                .build();
+        mailSenderService.send(mail);
+        return responseService.getSingleResult(req.getId());
     }
 
     @Operation(summary = "로그아웃", description = " (토큰 값과 id값 비교 후 실행) id에 해당하는 회원의 토큰을 삭제 후 완료 아이디 리턴(리턴 값은 임시)")
     @GetMapping("logout/{id}")
     @AccountValidator
     public ResponseEntity<SingleResult<String>> logout(@PathVariable("id") String id){
-        tokenService.deleteToken(id);
-        return responseService.getSingleResult(id);
+        return responseService.getSingleResult(memberService.logout(id));
     }
 
     @Operation(summary = "회원탈퇴", description = "(토큰 값과 id값 비교 후 실행) id에 해당하는 회원 탈퇴 후 탈퇴한 아이디 리턴(리턴 값은 임시)")
@@ -82,12 +98,14 @@ public class MemberController {
     }
 
     @GetMapping("/checkId/{id}")
-    @Operation(summary = "중복 아이디 확인", description = "id에 해당하는 회원 검색 후 중복 아이디 여부 리턴")
+    @Operation(summary = "중복 아이디 확인", description = "id에 해당하는 회원 검색 후 중복 아이디 여부 리턴 및 계정 확인 이메일 전송, 이메일 전송의 경우 비동기로 처리되므로 처리 결과 여부를 알 수 없음")
     @ApiResponse(responseCode = "200", description = "성공(아래 예제의 경우 data에 해당하는 데이터만 출력됩니다.)", content = @Content(schema = @Schema(implementation = MemberDto.Check.class), examples = {
             @ExampleObject(name = "사용 가능", value = "{\"duplicate\": false, \"msg\": \"사용 가능한 아이디입니다.\"}"),
             @ExampleObject(name = "사용 불가", value = "{\"duplicate\": true, \"msg\": \"중복된 아이디입니다.\"}"),
     }))
-    public ResponseEntity<SingleResult<MemberDto.Check>> checkId(@PathVariable("id") String id){
+    public ResponseEntity<SingleResult<MemberDto.Check>> checkId(@PathVariable("id")
+                                                                 @Pattern(regexp = "[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}$", message = "아이디는 이메일 형태로 입력되어져야 합니다.")
+                                                                 String id){
         boolean duplicate = false;
         String msg = CommonCode.AvailableId.getMsg();
         if (memberService.findDuplicateId(id)) {
@@ -100,5 +118,12 @@ public class MemberController {
                 .msg(msg)
                 .build();
         return responseService.getSingleResult(check);
+    }
+
+    @Operation(summary = "이메일 확인", description = "이메일에 발송된 링크 클릭 시 계정 활성화")
+    @ApiErrorCode(value = ErrorCode.ConfirmTokenNotFound)
+    @GetMapping("signup")
+    public ResponseEntity<SingleResult<String>> signupConfirm(@RequestParam String token){
+        return responseService.getSingleResult(memberService.emailCheckAndAccountActivate(token));
     }
 }

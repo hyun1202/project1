@@ -1,5 +1,6 @@
 package com.hyun.jobty.member.service;
 
+import com.hyun.jobty.member.domain.ConfirmToken;
 import com.hyun.jobty.member.domain.Token;
 
 public interface TokenService {
@@ -20,4 +21,10 @@ public interface TokenService {
     boolean validAccessToken(String memberId, String accessToken);
 
     void deleteToken(String memberId);
+
+    ConfirmToken checkConfirmToken(String token);
+
+    String createConfirmToken(String memberId, int seq);
+
+    void deleteConfirmToken(String token);
 }

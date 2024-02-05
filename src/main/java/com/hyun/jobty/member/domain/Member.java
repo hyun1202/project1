@@ -30,18 +30,25 @@ public class Member extends Timestamped implements UserDetails {
 
     private LocalDateTime last_login_dt;
     private LocalDateTime withdraw_dt;
+    // 계정 상태 컬럼 추가(0: 임시, 1: 정상, 2: 탈퇴)
+    private int status;
 
     @Builder
-    public Member(String id, String pwd, String nickname, String roles, LocalDateTime last_login_dt){
+    public Member(String id, String pwd, String nickname, String roles, LocalDateTime last_login_dt, int status){
         this.id = id;
         this.pwd = pwd;
         this.nickname = nickname;
         this.roles = roles;
         this.last_login_dt = last_login_dt;
+        this.status = status;
     }
 
     public void setWithdraw_dt(LocalDateTime withdraw_dt) {
         this.withdraw_dt = withdraw_dt;
+    }
+
+    public void setLast_login_dt(LocalDateTime last_login_dt) {
+        this.last_login_dt = last_login_dt;
     }
 
     // 권한 반환
@@ -50,7 +57,7 @@ public class Member extends Timestamped implements UserDetails {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
 
         for(String role : roles.split(",")){
-            System.out.println("getAutoriteis(): " + role);
+            System.out.println("authorities(): " + role);
             authorities.add(new SimpleGrantedAuthority(role));
         }
         return authorities;
@@ -103,5 +110,14 @@ public class Member extends Timestamped implements UserDetails {
         if (this.last_login_dt.isAfter(LocalDateTime.now().plusMonths(month)))
             return true;
         return false;
+    }
+
+    public void memberWithdraw(){
+        this.withdraw_dt = LocalDateTime.now();
+        this.status = Status.DEACTIVATE.ordinal();
+    }
+
+    public void memberActivate(){
+        this.status = Status.ACTIVATE.ordinal();
     }
 }

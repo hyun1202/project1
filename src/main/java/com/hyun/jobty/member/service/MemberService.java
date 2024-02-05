@@ -10,9 +10,10 @@ public interface MemberService {
     Member findByMemberSeq(int seq);
     Member findByMemberId(String id);
     Member login(MemberDto.LoginReq addMemberRequest);
-    String save(MemberDto.AddMemberReq addMemberReq);
+    Member save(MemberDto.AddMemberReq addMemberReq);
     String logout(String id);
     String withdraw(String id);
     boolean findDuplicateId(String id);
     Member reissuePassword(String pw);
+    String emailCheckAndAccountActivate(String token);
 }
