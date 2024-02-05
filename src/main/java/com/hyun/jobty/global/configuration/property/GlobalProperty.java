@@ -9,7 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 public class GlobalProperty {
 
     @Configuration
-    public class Database{
+    public static class Database{
         @Value(value = "${spring.datasource.url}")
         private String url;
         @Value(value = "${spring.datasource.username}")
@@ -30,7 +30,7 @@ public class GlobalProperty {
     }
 
     @Configuration
-    public class Redis{
+    public static class Redis{
         @Value(value = "${spring.data.redis.host}")
         private String host;
         @Value(value = "${spring.data.redis.port}")
@@ -49,6 +49,22 @@ public class GlobalProperty {
 //        public String getPassword() {
 //            return password;
 //        }
+    }
+
+    @Configuration
+    public static class Mail{
+        @Value("${spring.mail.username}")
+        private String username;
+        @Value("${spring.mail.password}")
+        private String password;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
     }
 
 }

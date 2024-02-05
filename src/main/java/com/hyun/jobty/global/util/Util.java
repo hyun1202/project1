@@ -26,6 +26,10 @@ public class Util {
         return UUID.randomUUID().toString().substring(1,8) + System.currentTimeMillis();
     }
 
+    public static String random(int start, int end){
+        return UUID.randomUUID().toString().substring(start, end);
+    }
+
     @SuppressWarnings("unchecked")
     public static <K, T> Map<K, T> toMap(Map<Object, Object> map){
         Map<K, T> newMap = new LinkedHashMap<>();

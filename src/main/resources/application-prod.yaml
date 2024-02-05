@@ -17,9 +17,33 @@ spring:
       default_batch_fetch_size: 100 # n+1 query 방지(in절 사용)
 #        format_sql: true
   #        show_sql: true
-
   devtools:
     add-properties: false
+  # 메일 관련 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hyun73874@gmail.com
+    password: vvdlfvubqrubcjbj
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+        debug: true
+  # 비동기 처리 관련 스레드 설정
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 5
+        queue-capacity: 5
+        keep-alive: 30s
 
 #logging:
 #  level:
@@ -32,11 +56,8 @@ jwt:
   issuer: 0157942@gmail.com
   secret_key: nqhMyX%^J%HNDw#2YTbNQkmNiMJKV6HsGh32QbqspYRllzyGI%JXrGpCob@9^FQfo0sNSMnSI5bQfQ7u^XPGNdpUhsHTfwqLUm24Z0uaMlRwY2YfZcXzn6nFL3x85YQUGEbTe6UFUAO806dYk#HwCm2Xe3cTuhl6WBxkRuqbJ7PU7PXSLy0NVbSFQA55RUDx^LKosc1TARI3x5nr2^sZst8gnbqNi%s23SDZbLN3nCwZv#@X8WqvTJ5GX^U1ZDSK
 
-## swagger disable
-#springdoc:
-#  swagger-ui:
-#    enabled: false
-
 # file upload 경로 설정
 upload.path: /data/img
 
+jobty:
+  host: http://localhost:8081 # 메일 관련 링크 host설정

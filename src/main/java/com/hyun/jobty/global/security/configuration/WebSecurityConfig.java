@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,8 +23,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
@@ -35,13 +32,6 @@ public class WebSecurityConfig {
     private final MemberDetailServiceImpl memberDetailServiceImpl;
     private final AccessDeniedHandler accessDeniedHandler;
     private final AuthenticationEntryPoint authenticationEntryPoint;
-
-    // 시큐리티 ignore 설정
-    @Bean
-    public WebSecurityCustomizer configure(){
-        return (web) -> web.ignoring()
-                .requestMatchers("/static/**");
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -55,6 +45,7 @@ public class WebSecurityConfig {
                         authorizeHttpRequests
                                 .requestMatchers("/login/**", "/signup/**", "/api/token/**", "/checkId/**").permitAll()  // 해당하는 경로는 누구나 접근 가능
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api-docs/**", "/swagger-resources/**, ").permitAll()
+                                .requestMatchers("/favicon.ico", "/static/**").permitAll()
                                 .anyRequest().authenticated() // 그 이외 경로는 인가는 필요하지 않으나 인증이 성공되어야 함.
                 )
                 // 에러 핸들링
