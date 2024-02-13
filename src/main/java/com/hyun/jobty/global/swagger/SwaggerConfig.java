@@ -81,6 +81,15 @@ public class SwaggerConfig {
     }
 
     @Bean
+    public GroupedOpenApi getBlogApi(@Qualifier("swagger") OperationCustomizer operationCustomizer){
+        return GroupedOpenApi.builder()
+                .group("blog")
+                .packagesToScan("com.hyun.jobty.blog")
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
     @Qualifier("swagger")
     public OperationCustomizer customize(){
         return (Operation operation, HandlerMethod handlerMethod) -> {

@@ -29,6 +29,11 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    public Menu findBySingleMenu(int seq) {
+        return menuRepository.findById(seq).orElseThrow(() -> new CustomException(ErrorCode.NotFoundMenu));
+    }
+
+    @Override
     public int deleteSingleMenu(String id, int seq) {
         // 게시글 또는 하위 메뉴가 있으면 삭제 불가
         // 하위 메뉴 검사

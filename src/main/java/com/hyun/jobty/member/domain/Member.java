@@ -34,7 +34,8 @@ public class Member extends Timestamped implements UserDetails {
     private int status;
 
     @Builder
-    public Member(String id, String pwd, String nickname, String roles, LocalDateTime last_login_dt, int status){
+    public Member(int seq, String id, String pwd, String nickname, String roles, LocalDateTime last_login_dt, int status){
+        this.seq = seq;
         this.id = id;
         this.pwd = pwd;
         this.nickname = nickname;

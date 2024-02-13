@@ -36,6 +36,8 @@ public enum ErrorCode implements BaseCode {
     NotFoundGroupMenu(8053, "해당하는 그룹 메뉴가 없습니다.", "해당하는 그룹 메뉴가 없습니다."),
     NotFoundMenu(8053, "해당하는 메뉴가 없습니다.", "해당하는 메뉴가 없습니다."),
     FailedDeleteMenu(8060, "해당하는 메뉴가 없어 삭제에 실패했습니다", "해당하는 메뉴가 없습니다."),
+    // 게시글 관련
+    NotFoundPost(8500, "해당하는 게시글 데이터가 없습니다.", "해당하는 게시글 데이터가 없습니다"),
     ;
 
     private int code; // 에러 발생 코드

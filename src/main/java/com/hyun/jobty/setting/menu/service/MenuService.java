@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface MenuService {
     List<Menu> findByMenu(String id);
+    Menu findBySingleMenu(int seq);
     int deleteSingleMenu(String id, int seq);
     Menu updateSingleMenu(String id, MenuDto.UpdateReq req);
     Menu saveSingleMenu(String id, MenuDto.AddReq req);
