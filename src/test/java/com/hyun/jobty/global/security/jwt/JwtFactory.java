@@ -1,5 +1,6 @@
 package com.hyun.jobty.global.security.jwt;
 
+import com.hyun.jobty.conf.security.jwt.JwtProperties;
 import io.jsonwebtoken.Jwts;
 import lombok.Builder;
 import lombok.Getter;

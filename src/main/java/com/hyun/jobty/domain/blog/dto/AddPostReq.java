@@ -1,4 +1,4 @@
-package com.hyun.jobty.blog.dto;
+package com.hyun.jobty.domain.blog.dto;
 
 import lombok.Getter;
 

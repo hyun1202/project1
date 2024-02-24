@@ -1,6 +1,6 @@
 package com.hyun.jobty.global;
 
-import com.hyun.jobty.global.util.Util;
+import com.hyun.jobty.util.Util;
 import org.junit.jupiter.api.Test;
 
 public class UtilTest {

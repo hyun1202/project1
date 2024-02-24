@@ -1,7 +1,7 @@
-package com.hyun.jobty.blog.domain;
+package com.hyun.jobty.domain.blog.domain;
 
-import com.hyun.jobty.member.domain.Member;
-import com.hyun.jobty.member.domain.Timestamped;
+import com.hyun.jobty.domain.member.domain.Member;
+import com.hyun.jobty.domain.member.domain.Timestamped;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,10 +14,10 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
-@Table(name = "post_comment")
+@Table(name = "comment")
 public class Comment extends Timestamped {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_comment_seq")
+    @Column(name = "comment_seq")
     private int seq;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_seq")
@@ -29,20 +29,21 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "member_seq")
     @OneToOne(fetch = FetchType.LAZY)
     private Member member;
-    @Column(name = "upper_post_no")
-    private int upperNo;
+    @Column(name = "upper_comment_no")
+    private Long upperNo;
     @Column(name = "group_ord")
     private int ord;
     @Column(name = "group_depth")
     private int depth;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "upper_no", insertable = false, updatable = false)
+    @JoinColumn(name = "upper_comment_no", insertable = false, updatable = false)
     private Comment comment;
     @OneToMany(mappedBy = "comment")
+    @OrderBy("seq asc")
     private List<Comment> reply = new ArrayList<>();
 
     @Builder
-    public Comment(int seq, Post post, String content, boolean isPrivate, Member member, int upperNo, int ord, int depth){
+    public Comment(int seq, Post post, String content, boolean isPrivate, Member member, Long upperNo, int ord, int depth){
         this.seq = seq;
         this.post = post;
         this.content = content;

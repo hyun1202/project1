@@ -1,13 +1,14 @@
-package com.hyun.jobty.blog.domain;
+package com.hyun.jobty.domain.blog.domain;
 
-import com.hyun.jobty.member.domain.Timestamped;
-import com.hyun.jobty.setting.detail.domain.Setting;
-import com.hyun.jobty.setting.menu.domain.Menu;
+import com.hyun.jobty.domain.member.domain.Timestamped;
+import com.hyun.jobty.domain.setting.detail.domain.Setting;
+import com.hyun.jobty.domain.setting.menu.domain.Menu;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
@@ -29,6 +30,8 @@ public class Post extends Timestamped {
     private String title;
     private String content;
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @SQLRestriction("group_depth = 0")
+    @OrderBy("seq asc")
     private List<Comment> comments;
 
     @Builder

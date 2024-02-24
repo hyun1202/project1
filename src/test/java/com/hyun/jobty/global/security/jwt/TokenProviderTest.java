@@ -1,7 +1,9 @@
 package com.hyun.jobty.global.security.jwt;
 
-import com.hyun.jobty.member.domain.Member;
-import com.hyun.jobty.member.repository.MemberRepository;
+import com.hyun.jobty.conf.security.jwt.JwtProperties;
+import com.hyun.jobty.conf.security.jwt.TokenProvider;
+import com.hyun.jobty.domain.member.domain.Member;
+import com.hyun.jobty.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

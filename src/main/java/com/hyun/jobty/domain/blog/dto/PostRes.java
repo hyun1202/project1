@@ -1,6 +1,6 @@
-package com.hyun.jobty.blog.dto;
+package com.hyun.jobty.domain.blog.dto;
 
-import com.hyun.jobty.blog.domain.Post;
+import com.hyun.jobty.domain.blog.domain.Post;
 import lombok.Builder;
 import lombok.Getter;
 

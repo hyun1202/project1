@@ -1,6 +1,6 @@
-package com.hyun.jobty.blog.repository;
+package com.hyun.jobty.domain.blog.repository;
 
-import com.hyun.jobty.blog.domain.Comment;
+import com.hyun.jobty.domain.blog.domain.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
