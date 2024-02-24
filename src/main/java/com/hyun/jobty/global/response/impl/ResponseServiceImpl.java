@@ -1,12 +1,12 @@
 package com.hyun.jobty.global.response.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hyun.jobty.global.exception.CustomException;
-import com.hyun.jobty.global.exception.ErrorCode;
+import com.hyun.jobty.advice.exception.CustomException;
+import com.hyun.jobty.advice.exception.ErrorCode;
 import com.hyun.jobty.global.response.*;
-import com.hyun.jobty.global.util.FileUtil;
-import com.hyun.jobty.global.util.FileVo;
-import com.hyun.jobty.global.util.Util;
+import com.hyun.jobty.util.file.FileUtil;
+import com.hyun.jobty.util.file.FileVo;
+import com.hyun.jobty.util.Util;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

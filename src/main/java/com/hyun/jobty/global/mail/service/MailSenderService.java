@@ -1,9 +1,9 @@
 package com.hyun.jobty.global.mail.service;
 
-import com.hyun.jobty.global.configuration.MailConfig;
-import com.hyun.jobty.global.exception.CustomException;
-import com.hyun.jobty.global.exception.ErrorCode;
 import com.hyun.jobty.global.mail.model.Mail;
+import com.hyun.jobty.conf.MailConfig;
+import com.hyun.jobty.advice.exception.CustomException;
+import com.hyun.jobty.advice.exception.ErrorCode;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -27,13 +27,15 @@ public class MailSenderService {
     @Async
     public void send(Mail mail) {
         // 링크 전송을 위한 호스트 지정
-        mail.setAppHost(mailConfig.getAppHost());
+        mail.setAppHost(mailConfig.getLinkHost());
+        // 링크 전송을 위한 url 세팅
+        mail.setUrlParam();
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             // 전송 대상
             message.addRecipients(Message.RecipientType.TO, mail.getReceiverMail());
             // 제목
-            message.setSubject(mail.getSubject());
+            message.setSubject("Jobty " + mail.getSubject());
             // 내용
             message.setText(mail.getMailBody(), mail.getCharset(), mail.getType());
             // 보내는 사람
