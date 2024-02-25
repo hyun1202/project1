@@ -133,7 +133,7 @@ public class MemberController {
             @ExampleObject(name = "사용 가능", value = "{\"duplicate\": false, \"msg\": \"사용 가능한 아이디입니다.\"}"),
             @ExampleObject(name = "사용 불가", value = "{\"duplicate\": true, \"msg\": \"중복된 아이디입니다.\"}"),
     }))
-    public ResponseEntity<SingleResult<MemberDto.Check>> checkId(@PathVariable("id")
+    public ResponseEntity<SingleResult<MemberDto.Check>> checkId(@PathVariable("id") @Valid
                                                                  MemberDto.FindReq req){
         boolean duplicate = false;
         String msg = CommonCode.AvailableId.getMsg();
@@ -151,7 +151,7 @@ public class MemberController {
 
     @Operation(summary = "아이디 찾기", description = "아이디 찾기")
     @PostMapping("find/id")
-    public ResponseEntity<SingleResult<MemberDto.FindRes>> findId(@RequestBody MemberDto.FindReq req){
+    public ResponseEntity<SingleResult<MemberDto.FindRes>> findId(@RequestBody @Valid MemberDto.FindReq req){
         String msg = CommonCode.EmailNotFound.getMsg();
         if (memberService.findDuplicateId(req.getId())){
             msg = CommonCode.EmailExists.getMsg();
@@ -165,7 +165,7 @@ public class MemberController {
 
     @Operation(summary = "계정 비밀번호 찾기", description = "아이디 체크 후 변경 링크 발송")
     @PostMapping("find/pw")
-    public ResponseEntity<SingleResult<MemberDto.FindRes>> findPassword(@RequestBody MemberDto.FindReq req){
+    public ResponseEntity<SingleResult<MemberDto.FindRes>> findPassword(@RequestBody @Valid MemberDto.FindReq req){
         String msg = CommonCode.SendConfirmEMail.getMsg();
         if (!memberService.findDuplicateId(req.getId())){
             msg = CommonCode.EmailNotFound.getMsg();

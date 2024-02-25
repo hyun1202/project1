@@ -34,9 +34,9 @@ public class LoggingFilter implements Filter {
 
             chain.doFilter(requestToCache, responseToCache);
 
-            logger.debug("request header: {}", getHeaders(requestToCache));
-            logger.debug("request body: {}", getRequestBody((ContentCachingRequestWrapper) requestToCache));
-            logger.debug("response body: {}", getResponseBody(responseToCache));
+            logger.info("request header: {}", getHeaders(requestToCache));
+            logger.info("request body: {}", getRequestBody((ContentCachingRequestWrapper) requestToCache));
+            logger.info("response body: {}", getResponseBody(responseToCache));
 
         } else {
             chain.doFilter(servletRequest, servletResponse);

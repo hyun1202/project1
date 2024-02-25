@@ -67,7 +67,7 @@ public class WebSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);   //내 서버가 응답할 때 json을 자바스크립트에서 처리할 수 있게 할지를 설정
         config.addAllowedOriginPattern("*");
-        config.setAllowedOriginPatterns(List.of("http://jobty.toy-code.me:5500/", "http://jobty.toy-code.me", "https://jobty.toy-code.me"));
+        config.setAllowedOriginPatterns(List.of("http://jobty.toy-code.me:5500/", "http://jobty.toy-code.me", "https://jobty.toy-code.me", "http://jobty.toy-code.me:5173"));
         config.addAllowedHeader("*");   // 모든 header에 응답 허용
 //        config.addAllowedMethod("*");
         config.addAllowedMethod(HttpMethod.GET.name());

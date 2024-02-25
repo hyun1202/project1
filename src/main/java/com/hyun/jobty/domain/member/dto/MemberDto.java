@@ -45,9 +45,9 @@ public class MemberDto {
     @Schema(description = "로그인 요청 데이터")
     public static class LoginReq {
         @NotNull
-        @Schema(description = "아이디", example = "test1")
+        @Schema(description = "아이디")
         private String id;
-        @Schema(description = "비밀번호", example = "test1")
+        @Schema(description = "비밀번호")
         @NotNull
         private String pwd;
 
@@ -120,6 +120,7 @@ public class MemberDto {
     public static class FindReq{
         @Pattern(regexp = "[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}$", message = "올바른 이메일 형태가 아니거나 아이디에 허용된 특수문자(-_.) 외 문자열이 입력되었습니다.")
         @Schema(description = "이메일")
+        @NotNull
         private String id;
         public FindReq() {}
         public FindReq(String id){
@@ -146,6 +147,7 @@ public class MemberDto {
     public static class Change{
         @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[!@#$%^&*])[\\da-zA-Z!@#$%^&*]{8,20}", message = "비밀번호는 영문, 숫자, 특수문자 포함 8~20자로 입력해야 합니다.")
         @Schema(description = "비밀번호(영문,숫자,특수문자 포함 8~20자)")
+        @NotNull
         private String pwd;
         public Change(){}
     }
