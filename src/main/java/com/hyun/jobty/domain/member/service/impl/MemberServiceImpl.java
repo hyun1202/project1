@@ -10,6 +10,7 @@ import com.hyun.jobty.domain.member.dto.MemberDto;
 import com.hyun.jobty.domain.member.repository.MemberRepository;
 import com.hyun.jobty.domain.member.service.MemberService;
 import com.hyun.jobty.domain.member.service.TokenService;
+import com.hyun.jobty.global.response.CommonCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -72,6 +73,66 @@ public class MemberServiceImpl implements MemberService {
     }
 
     /**
+     * 계정 아이디 찾기
+     * @param member_id 유저 이메일
+     */
+    @Override
+    public MemberDto.FindRes findAccountId(String member_id) {
+        String msg = CommonCode.EmailNotFound.getMsg();
+        // 중복일 경우
+        if (findDuplicateId(member_id)){
+            msg = CommonCode.EmailExists.getMsg();
+        }
+        return MemberDto.FindRes.builder()
+                .id(member_id)
+                .msg(msg)
+                .build();
+    }
+
+    /**
+     * 계정 비밀번호 찾기
+     * @param member_id 유저 이메일
+     */
+    @Override
+    public MemberDto.FindRes findAccountPwd(String member_id) {
+        String msg = CommonCode.SendConfirmEMail.getMsg();
+        findByMemberId(member_id);
+        return MemberDto.FindRes.builder()
+                .id(member_id)
+                .msg(msg)
+                .build();
+    }
+
+    /**
+     * 아이디 중복 체크
+     * @param member_id
+     */
+    @Override
+    public MemberDto.Check checkDuplicateId(String member_id) {
+        boolean duplicate = false;
+        String msg = CommonCode.AvailableId.getMsg();
+        if (findDuplicateId(member_id)) {
+            // 아이디 중복
+            duplicate = true;
+            msg = CommonCode.DuplicatedId.getMsg();
+        }
+        return MemberDto.Check.builder()
+                .duplicate(duplicate)
+                .msg(msg)
+                .build();
+    }
+
+    /**
+     * 토큰 생성 여부 확인
+     * @param member_id 토큰 아이디
+     * @param type 토큰 타입
+     */
+    @Override
+    public void checkTokenAndAccountId(String member_id, TokenType type) {
+        tokenService.createTokenIdAndCheckByTokenId(member_id, type);
+    }
+
+    /**
      * 비밀번호 변경을 위해 토큰 체크 및 비밀번호 변경
      * @param token_id 아이디
      * @param token 토큰
@@ -83,7 +144,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public Member tokenCheckAndUpdatePassword(String token_id, String token, MemberDto.Change req){
         // 토큰 검증
-        if (!tokenService.validToken(token_id, token, TokenType.FINDPW))
+        if (!tokenService.validToken(token_id, token, TokenType.change))
             throw new CustomException(ErrorCode.UnexpectedToken);
         Member member = findByMemberId(tokenService.findByTokenId(token_id).getMemberId());
         // 비밀번호 업데이트
@@ -103,7 +164,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public String tokenCheckAndAccountActivate(String token_id, String token) {
         // 토큰 검증
-        if (!tokenService.validToken(token_id, token, TokenType.SIGNUP))
+        if (!tokenService.validToken(token_id, token, TokenType.signup))
             throw new CustomException(ErrorCode.UnexpectedToken);
         // 토큰에 해당하는 회원 가져오기
         Member member = findByMemberId(tokenService.findByTokenId(token_id).getMemberId());
@@ -126,7 +187,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public Member signin(MemberDto.LoginReq loginReq) {
         // id 체크 로직
-        Member member = memberRepository.findById(loginReq.getId()).orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
+        Member member = memberRepository.findById(loginReq.getId()).orElseThrow(() -> new CustomException(ErrorCode.LoginFailed));
         // pw 체크 로직
         if (!bCryptPasswordEncoder.matches(loginReq.getPwd(), member.getPwd())){
             throw new CustomException(ErrorCode.IncorrectPassword);
@@ -176,7 +237,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public String signout(String member_id) {
         // 로그인 토큰 삭제
-        tokenService.findTokenIdAndDeleteToken(member_id, TokenType.LOGIN);
+        tokenService.findTokenIdAndDeleteToken(member_id, TokenType.login);
         return member_id;
     }
 

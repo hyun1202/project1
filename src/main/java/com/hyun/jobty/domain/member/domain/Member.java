@@ -1,5 +1,6 @@
 package com.hyun.jobty.domain.member.domain;
 
+import com.hyun.jobty.util.cipher.CipherUtil;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -77,6 +78,22 @@ public class Member extends Timestamped implements UserDetails {
     @Override
     public String getUsername() {
         return this.id;
+    }
+
+    /**
+     * 암호화한 ID값을 가져온다.
+     * @return 암호화된 ID값
+     */
+    public String getEncUserId(){
+        return CipherUtil.encrypt(CipherUtil.ID, this.id);
+    }
+
+    /**
+     * 복호화한 ID값을 가져온다.
+     * @return 복호화된 ID값
+     */
+    public String getDecUserId(){
+        return CipherUtil.decrypt(CipherUtil.ID, this.id);
     }
 
     /**

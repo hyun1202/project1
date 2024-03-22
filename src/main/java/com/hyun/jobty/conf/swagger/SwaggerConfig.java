@@ -1,11 +1,11 @@
 package com.hyun.jobty.conf.swagger;
 
-import com.hyun.jobty.global.annotation.AccountValidator;
 import com.hyun.jobty.advice.exception.ErrorCode;
+import com.hyun.jobty.conf.swagger.annotation.ApiErrorCode;
+import com.hyun.jobty.global.annotation.AccountValidator;
 import com.hyun.jobty.global.response.CommonReason;
 import com.hyun.jobty.global.response.CommonResult;
 import com.hyun.jobty.global.response.ResponseService;
-import com.hyun.jobty.conf.swagger.annotation.ApiErrorCode;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.models.Components;
@@ -14,6 +14,7 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -23,6 +24,7 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.method.HandlerMethod;
 
 import java.util.ArrayList;
@@ -31,12 +33,16 @@ import java.util.List;
 
 @OpenAPIDefinition(
         info = @Info(title = "Jobty API 명세서",
-                description = "Jobty 서비스 API 명세서",
+                description = """
+                <Notice>
+                <p>Jobty 서비스 API 명세서</p>
+                <p>* Responses의 *200은 200으로 응답되지만 예상 가능한 에러 처리입니다.</p>""",
                 version = "v1"))
 @Configuration
 public class SwaggerConfig {
     private ResponseService responseService;
     private final String domain_package = "com.hyun.jobty.domain.";
+    private final String global_package = "com.hyun.jobty.global.";
     public SwaggerConfig(ResponseService responseService){
         this.responseService = responseService;
     }
@@ -91,22 +97,34 @@ public class SwaggerConfig {
     }
 
     @Bean
+    public GroupedOpenApi getFileApi(@Qualifier("swagger") OperationCustomizer operationCustomizer){
+        return GroupedOpenApi.builder()
+                .group("file")
+                .packagesToScan(global_package + "file")
+                .addOperationCustomizer(operationCustomizer)
+                .build();
+    }
+
+    @Bean
     @Qualifier("swagger")
     public OperationCustomizer customize(){
         return (Operation operation, HandlerMethod handlerMethod) -> {
             ApiErrorCode apiErrorCode = handlerMethod.getMethodAnnotation(ApiErrorCode.class);
             AccountValidator accountValidator = handlerMethod.getMethodAnnotation(AccountValidator.class);
+            GetMapping getMapping = handlerMethod.getMethodAnnotation(GetMapping.class);
             ApiResponses responses = operation.getResponses();
             // 기본 에러 응답 example 적용
-            // 400 적용
-            if (accountValidator == null){
-                // accountValidator 어노테이션 단 메소드 적용
-                setResponse("400", responses, ErrorCode.FAIL.getCommonReason());
-            } else {
-                setResponse("400", responses, ErrorCode.IncorrectTokenId.getCommonReason());
+            // get 이외의 경우 400 적용
+            if (getMapping == null) {
+                setResponse("400", responses, ErrorCode.RequiredFields.getCommonReason());
             }
 
-            // apiErrorCode 어노테이션 단 메소드 적용
+            // accountValidator 어노테이션이 붙은 메소드는 401 메시지 출력
+            if (accountValidator != null){
+                setResponse("401", responses, ErrorCode.IncorrectTokenId.getCommonReason());
+            }
+
+            // apiErrorCode 어노테이션 단 메소드 적용, 해당 메소드는 200으로 응답됨
             if (apiErrorCode != null){
                 List<CommonReason> commonReasons = new ArrayList<>();
                 for (ErrorCode errorCode : apiErrorCode.value()){
@@ -116,7 +134,7 @@ public class SwaggerConfig {
                         .commonReasons(commonReasons)
                         .build();
                 // Response 적용
-                setCustomResponse("400", responses, exampleDto);
+                setCustomResponse("*200", responses, exampleDto);
             }
 
             // 500 적용
@@ -125,6 +143,19 @@ public class SwaggerConfig {
 //            operation.setResponses(new ApiResponses());
             return operation;
         };
+    }
+
+    private void setResponse(String status, ApiResponses responses){
+        Content content = new Content();
+//        MediaType mediaType = setErrorExample(List.of(commonReason));
+        ApiResponse apiResponse = new ApiResponse();
+        content.addMediaType("application/json", new MediaType());
+        apiResponse.setContent(content);
+        Schema<Object> schema = new Schema<>();
+        schema.set$schema("#/components/schemas/SingleResultFindRes");
+        new MediaType().setSchema(schema);
+        apiResponse.set$ref("#/components/schemas/SingleResultFindRes");
+        responses.addApiResponse(status, apiResponse);
     }
 
     private void setResponse(String status, ApiResponses responses, CommonReason commonReason){

@@ -13,23 +13,21 @@ import com.hyun.jobty.global.annotation.AccountValidator;
 import com.hyun.jobty.global.mail.model.Mail;
 import com.hyun.jobty.global.mail.model.UrlParam;
 import com.hyun.jobty.global.mail.service.MailSenderService;
-import com.hyun.jobty.global.response.CommonCode;
 import com.hyun.jobty.global.response.ResponseService;
 import com.hyun.jobty.global.response.SingleResult;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.annotation.ElementType;
 import java.util.List;
 
-@Tag(name = "로그인", description = "로그인 API, Last update: 2024.02.22")
+@Tag(name = "로그인", description = "로그인 API, Last update: 2024.03.21 id 관련 http메서드 및 json 데이터 변경")
 @RequestMapping("/")
 @RequiredArgsConstructor
 @RestController
@@ -39,10 +37,10 @@ public class MemberController {
     private final MailSenderService mailSenderService;
     private final TokenService tokenService;
 
-    @Operation(summary = "계정 정보 확인", description = "로그인 계정에 해당하는 계정 정보 리턴 (토큰 값과 id값 비교 후 실행)")
-    @GetMapping("/user/{id}")
-    @AccountValidator
-    public ResponseEntity<SingleResult<MemberDto>> getMember(@PathVariable("id") String id){
+    @Operation(summary = "계정 정보 확인(테스트)", description = "로그인 계정에 해당하는 계정 정보 리턴 (토큰 값과 id값 비교 후 실행)")
+    @GetMapping("/account/user")
+    @AccountValidator(type = ElementType.PARAMETER)
+    public ResponseEntity<SingleResult<MemberDto>> getMember(@RequestParam String id){
         MemberDto member = MemberDto.builder().member(memberService.findByMemberId(id)).build();
         return responseService.getSingleResult(member);
     }
@@ -58,7 +56,7 @@ public class MemberController {
                 .build();
         // 2. 토큰 정보
         TokenRes token = TokenRes.builder()
-                .token(tokenService.createToken(req.getId(), TokenType.LOGIN))
+                .token(tokenService.createToken(req.getId(), TokenType.login))
                 .build();
         MemberDto.LoginRes result = MemberDto.LoginRes.builder()
                 .member(member)
@@ -74,7 +72,7 @@ public class MemberController {
         // 1. 계정 생성(임시)
         Member member = memberService.signup(req);
         // 2. 토큰 생성 및 메일 전송
-        sendMail("signup", tokenService.createToken(member.getId(), TokenType.SIGNUP));
+        sendMail("signup", tokenService.createToken(member.getId(), TokenType.signup));
         return responseService.getSingleResult(req.getId());
     }
 
@@ -88,104 +86,78 @@ public class MemberController {
                         .receiverMail(token.getMemberId())
                         .subject("이메일 주소 인증")
                         .url(url)
-                        .urlParams(List.of(new UrlParam("id", token.getId()), new UrlParam("token", token.getAccessToken())))
+                        .urlParams(List.of(new UrlParam("token_id", token.getId()), new UrlParam("token", token.getAccessToken())))
                         .build()
         );
     }
 
-    @Operation(summary = "메일 재발송", description = "임시로 생성한 해당 계정으로 인증 메일 재발송, 이전에 발송한 토큰번호는 유효하지 않음.(재발송된 토큰은 30분동안 유효)")
-    @ApiErrorCode(value = {ErrorCode.AccountActivated, ErrorCode.UserNotFound})
-    @PostMapping("/mail-resend")
-    public ResponseEntity<SingleResult<String>> resendMail(@RequestBody @Valid MemberDto.FindReq req){
-        // 1. 계정 생성 여부 확인
-        Member member = memberService.findByMemberId(req.getId());
+    @Operation(summary = "메일 재발송", description = "임시로 생성한 해당 계정으로 인증 메일 재발송, 이전에 발송한 토큰번호는 유효하지 않음.(재발송된 토큰은 30분동안 유효), 메일 발송의 경우 비동기로 진행하므로 항상 성공됨(프론트에서 확인 불가)")
+    @ApiErrorCode(value = {ErrorCode.TokenUserNotFound, ErrorCode.AccountActivated, ErrorCode.UserNotFound})
+    @PostMapping("/account/mail-resend")
+    public ResponseEntity<SingleResult<String>> resendMail(@Parameter(name =  "url", description  = "메일 전송 시 링크로 전송될 url 입력", example = "signup", required = true)
+                                                               @RequestParam @NotNull  String url,
+                                                           @RequestParam @NotNull TokenType type,
+                                                           @RequestBody @Valid MemberDto.FindReq req){
+        // 1.메일 발송 여부 확인 (토큰 확인)
+        memberService.checkTokenAndAccountId(req.getId(), type);
         // 2. 토큰 생성 및 메일 전송
-        sendMail("signup", tokenService.createToken(member.getId(), TokenType.SIGNUP));
+        sendMail(url, tokenService.createToken(req.getId(), type));
         return responseService.getSingleResult(req.getId());
     }
 
     @Operation(summary = "회원가입 이메일 확인", description = "이메일에 발송된 링크 클릭 시 계정 활성화")
     @ApiErrorCode(value = ErrorCode.TokenUserNotFound)
     @GetMapping("signup")
-    public ResponseEntity<SingleResult<String>> signupConfirm(@RequestParam String id,
+    public ResponseEntity<SingleResult<String>> signupConfirm(@RequestParam String token_id,
                                                               @RequestParam String token){
-        return responseService.getSingleResult(memberService.tokenCheckAndAccountActivate(id, token));
+        return responseService.getSingleResult(memberService.tokenCheckAndAccountActivate(token_id, token));
     }
 
     @Operation(summary = "로그아웃", description = " (토큰 값과 id값 비교 후 실행) id에 해당하는 회원의 토큰을 삭제 후 완료 아이디 리턴(리턴 값은 임시)")
-    @GetMapping("signout/{id}")
+    @PostMapping("signout")
     @AccountValidator
-    public ResponseEntity<SingleResult<String>> signout(@PathVariable("id") String id){
-        return responseService.getSingleResult(memberService.signout(id));
+    public ResponseEntity<SingleResult<String>> signout(@RequestBody MemberDto.FindReq req){
+        return responseService.getSingleResult(memberService.signout(req.getId()));
     }
 
     @Operation(summary = "회원탈퇴", description = "(토큰 값과 id값 비교 후 실행) id에 해당하는 회원 탈퇴 후 탈퇴한 아이디 리턴(리턴 값은 임시)")
-    @GetMapping("/withdraw/{id}")
+    @PostMapping("/account/withdraw")
     @ApiErrorCode(ErrorCode.UserNotFound)
     @AccountValidator
-    public ResponseEntity<SingleResult<String>> withdraw(@PathVariable("id") String id){
-        return responseService.getSingleResult(memberService.withdraw(id));
+    public ResponseEntity<SingleResult<String>> withdraw(@RequestBody MemberDto.FindReq req){
+        return responseService.getSingleResult(memberService.withdraw(req.getId()));
     }
 
-    @GetMapping("/checkId/{id}")
-    @Operation(summary = "중복 아이디 확인", description = "id에 해당하는 회원 검색 후 중복 아이디 여부 리턴 및 계정 확인 이메일 전송, 이메일 전송의 경우 비동기로 처리되므로 처리 결과 여부를 알 수 없음")
-    @ApiResponse(responseCode = "200", description = "성공(아래 예제의 경우 data에 해당하는 데이터만 출력됩니다.)", content = @Content(schema = @Schema(implementation = MemberDto.Check.class), examples = {
-            @ExampleObject(name = "사용 가능", value = "{\"duplicate\": false, \"msg\": \"사용 가능한 아이디입니다.\"}"),
-            @ExampleObject(name = "사용 불가", value = "{\"duplicate\": true, \"msg\": \"중복된 아이디입니다.\"}"),
-    }))
-    public ResponseEntity<SingleResult<MemberDto.Check>> checkId(@PathVariable("id") @Valid
+    @PostMapping("/account/check/id")
+    @Operation(summary = "중복 아이디 확인", description = "id에 해당하는 회원 검색 후 중복 아이디 여부 리턴 및 계정 확인")
+    public ResponseEntity<SingleResult<MemberDto.Check>> checkId(@RequestBody @Valid
                                                                  MemberDto.FindReq req){
-        boolean duplicate = false;
-        String msg = CommonCode.AvailableId.getMsg();
-        if (memberService.findDuplicateId(req.getId())) {
-            // 아이디 중복
-            duplicate = true;
-            msg = CommonCode.DuplicatedId.getMsg();
-        }
-        MemberDto.Check check = MemberDto.Check.builder()
-                .duplicate(duplicate)
-                .msg(msg)
-                .build();
-        return responseService.getSingleResult(check);
+        return responseService.getSingleResult(memberService.checkDuplicateId(req.getId()));
     }
 
     @Operation(summary = "아이디 찾기", description = "아이디 찾기")
-    @PostMapping("find/id")
+    @ApiErrorCode(ErrorCode.UserNotFound)
+    @PostMapping("/account/find/id")
     public ResponseEntity<SingleResult<MemberDto.FindRes>> findId(@RequestBody @Valid MemberDto.FindReq req){
-        String msg = CommonCode.EmailNotFound.getMsg();
-        if (memberService.findDuplicateId(req.getId())){
-            msg = CommonCode.EmailExists.getMsg();
-        }
-        MemberDto.FindRes res = MemberDto.FindRes.builder()
-                .id(req.getId())
-                .msg(msg)
-                .build();
-        return responseService.getSingleResult(res);
+        return responseService.getSingleResult(memberService.findAccountId(req.getId()));
     }
 
-    @Operation(summary = "계정 비밀번호 찾기", description = "아이디 체크 후 변경 링크 발송")
-    @PostMapping("find/pw")
+    @Operation(summary = "계정 비밀번호 찾기", description = "아이디 확인 후 해당 이메일로 변경 링크 메일 발송, 메일 발송의 경우 비동기로 진행하므로 항상 성공됨(프론트에서 확인 불가)")
+    @ApiErrorCode(ErrorCode.UserNotFound)
+    @PostMapping("/account/find/pwd")
     public ResponseEntity<SingleResult<MemberDto.FindRes>> findPassword(@RequestBody @Valid MemberDto.FindReq req){
-        String msg = CommonCode.SendConfirmEMail.getMsg();
-        if (!memberService.findDuplicateId(req.getId())){
-            msg = CommonCode.EmailNotFound.getMsg();
-        }
-
+        MemberDto.FindRes res = memberService.findAccountPwd(req.getId());
         // 토큰 생성 및 메일 전송
-        sendMail("pw-change", tokenService.createToken(req.getId(), TokenType.FINDPW));
-
-        MemberDto.FindRes res = MemberDto.FindRes.builder()
-                .id(req.getId())
-                .msg(msg)
-                .build();
+        sendMail("account/change/pwd", tokenService.createToken(res.getId(), TokenType.change));
         return responseService.getSingleResult(res);
     }
 
-    @Operation(summary = "계정 비밀번호 변경", description = "토큰 값의 ID에 해당하는 비밀번호 변경")
-    @PostMapping("pw-change")
-    public ResponseEntity<SingleResult<String>> changePassword(@RequestParam String id,
+    @Operation(summary = "계정 비밀번호 변경", description = "토큰 값의 ID에 해당하는 비밀번호 변경, 토큰 사용 후 재사용 불가")
+    @ApiErrorCode({ErrorCode.TokenUserNotFound, ErrorCode.UnexpectedToken, ErrorCode.UserNotFound})
+    @PostMapping("/account/change/pwd")
+    public ResponseEntity<SingleResult<String>> changePassword(@RequestParam String token_id,
                                                                @RequestParam String token,
                                                                @RequestBody MemberDto.Change req){
-        return responseService.getSingleResult(memberService.tokenCheckAndUpdatePassword(id, token, req).getId());
+        return responseService.getSingleResult(memberService.tokenCheckAndUpdatePassword(token_id, token, req).getId());
     }
 }

@@ -1,7 +1,7 @@
 package com.hyun.jobty.domain.setting.detail.service;
 
 import com.hyun.jobty.domain.setting.detail.domain.Setting;
-import com.hyun.jobty.util.file.FileVo;
+import com.hyun.jobty.global.file.FileVo;
 import com.hyun.jobty.domain.setting.detail.dto.SettingDto;
 
 public interface SettingService {

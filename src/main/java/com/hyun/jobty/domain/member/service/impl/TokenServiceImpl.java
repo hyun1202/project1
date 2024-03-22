@@ -37,6 +37,16 @@ public class TokenServiceImpl implements TokenService {
                 .orElseThrow(() -> new CustomException(ErrorCode.TokenUserNotFound));
     }
 
+    /**
+     * 토큰 생성 여부 확인을 위해 유저 아이디로 토큰 아이디를 생성하고 토큰 데이터에 해당 토큰 아이디가 있는지 확인한다.
+     * @param member_id 유저 아이디
+     * @return 토큰 생성 여부
+     */
+    @Override
+    public void createTokenIdAndCheckByTokenId(String member_id, TokenType type) {
+        findByTokenId(createTokenId(member_id, type));
+    }
+
 
     /**
      * 만료된 토큰 재발급
@@ -67,7 +77,7 @@ public class TokenServiceImpl implements TokenService {
         if (!tokenProvider.validToken(refreshToken)){
             return false;
         }
-        String token_id = createTokenId(member_id, TokenType.LOGIN);
+        String token_id = createTokenId(member_id, TokenType.login);
         String strRefreshToken = findByTokenId(token_id).getRefreshToken();
         if (getTokenType(token_id) == type && strRefreshToken.equals(refreshToken)){
             return true;
@@ -87,10 +97,10 @@ public class TokenServiceImpl implements TokenService {
         if (!tokenProvider.validToken(accessToken)){
             return false;
         }
-        String token_id = createTokenId(member_id, TokenType.LOGIN);
+        String token_id = createTokenId(member_id, TokenType.login);
         String strAccessToken = findByTokenId(token_id).getAccessToken();
         // 토큰 타입 및 일치 확인
-        if (getTokenType(token_id) == TokenType.LOGIN && strAccessToken.equals(accessToken)){
+        if (getTokenType(token_id) == TokenType.login && strAccessToken.equals(accessToken)){
             return true;
         }
         return false;

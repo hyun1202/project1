@@ -79,6 +79,8 @@ public class GlobalProperty {
             private String admin_key;
             @Value("${jobty.key.aes.super_key}")
             private String super_key;
+            @Value("${jobty.key.aes.id_key}")
+            private String id_key;
         }
         @Getter
         @Configuration

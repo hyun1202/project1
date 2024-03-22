@@ -2,7 +2,7 @@ package com.hyun.jobty.global.response;
 
 import com.hyun.jobty.advice.ExceptionAdvice;
 import com.hyun.jobty.advice.exception.ErrorCode;
-import com.hyun.jobty.util.file.FileVo;
+import com.hyun.jobty.global.file.FileVo;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;

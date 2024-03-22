@@ -1,7 +1,7 @@
 package com.hyun.jobty.domain.setting.detail.dto;
 
 import com.hyun.jobty.domain.setting.detail.domain.Setting;
-import com.hyun.jobty.util.file.FileRequest;
+import com.hyun.jobty.global.file.dto.FileReq;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,7 +58,7 @@ public class SettingDto {
     }
 
     @Getter
-    public static class FaviconReq extends FileRequest {
+    public static class FaviconReq extends FileReq {
         private String fileName;
 
         public FaviconReq(List<MultipartFile> multipartFiles){

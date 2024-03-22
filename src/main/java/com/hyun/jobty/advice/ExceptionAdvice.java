@@ -36,7 +36,7 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected CommonResult httpRequestMessageException(HttpServletRequest request, Exception e){
         e.printStackTrace();
         return responseService.getFailResult(-1, "요청 값이 올바르지 않습니다.");
@@ -56,7 +56,7 @@ public class ExceptionAdvice {
      * @return 입력 값 검증 오류 내용
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CommonResult processValidationError(MethodArgumentNotValidException exception) {
         BindingResult bindingResult = exception.getBindingResult();
         StringBuilder builder = new StringBuilder();
@@ -85,10 +85,12 @@ public class ExceptionAdvice {
             }
 
             // Not null 필드 확인
-            for (String requiredField : requiredFields){
-                if (fieldError.getField().equals(requiredField)) {
-                    msg = "[" + fieldName + "]" + not_null_msg;
-                    break;
+            if (fieldError.getDefaultMessage().equals("널이어서는 안됩니다")) {
+                for (String requiredField : requiredFields) {
+                    if (fieldError.getField().equals(requiredField)) {
+                        msg = "[" + fieldName + "]" + not_null_msg;
+                        break;
+                    }
                 }
             }
 

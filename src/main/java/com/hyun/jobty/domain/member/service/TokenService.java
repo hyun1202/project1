@@ -5,6 +5,7 @@ import com.hyun.jobty.domain.member.domain.TokenType;
 
 public interface TokenService {
     Token findByTokenId(String token_id);
+    void createTokenIdAndCheckByTokenId(String member_id, TokenType type);
     Token reissueAccessToken(String refreshToken, TokenType type);
     void findTokenIdAndDeleteToken(String member_id, TokenType type);
     Token createToken(String member_id, TokenType type);

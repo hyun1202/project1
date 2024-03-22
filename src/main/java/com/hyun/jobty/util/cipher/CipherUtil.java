@@ -11,6 +11,7 @@ public class CipherUtil{
     public static final int NORMAL = 0;
     public static final int ADMIN = 1;
     public static final int SUPER = 2;
+    public static final int ID = 3;
 
     private static final String plus = "+";
     private static final String equal = "=";
@@ -81,6 +82,8 @@ public class CipherUtil{
             return key.getAdmin_key();
         if (keyType == SUPER)
             return key.getSuper_key();
+        if (keyType == ID)
+            return key.getId_key();
         throw new CustomException(ErrorCode.IncorrectKeyType);
     }
 }

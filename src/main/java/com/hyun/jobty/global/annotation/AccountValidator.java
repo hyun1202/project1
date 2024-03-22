@@ -12,15 +12,15 @@ import java.lang.annotation.Target;
  *
  * <b>value</b>: 비교할 파라미터명 및 객체명, 기본 값은 id
  * <b>type</b>:
+ * * [기본값] ElementType.FIELD: Class의 Field에서 찾을 경우 사용
  * * ElementType.PARAMETER: 파라미터에서 찾을 경우 사용
- * * ElementType.FIELD: Class의 Field에서 찾을 경우 사용
- * <b>field</b>: type이 ElementType.FIELD일 경우 사용, 기본 값은 id
+ * <b>field</b>: type이 <u>ElementType.FIELD</u>일 경우사용, 기본 값은 id
  * </pre>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AccountValidator {
     String value() default "id";
-    ElementType type() default ElementType.PARAMETER;
+    ElementType type() default ElementType.FIELD;   // id 기본값 parameter=>field 변경
     String field() default "id";
 }

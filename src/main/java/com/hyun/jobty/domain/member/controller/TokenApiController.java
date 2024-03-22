@@ -35,7 +35,7 @@ public class TokenApiController {
     public ResponseEntity<SingleResult<TokenRes>> createNewAccessToken(@RequestBody TokenRes request){
         // 토큰에서 유저 아이디 가져옴
         TokenRes newToken = TokenRes.builder()
-                .token(tokenService.reissueAccessToken(request.getRefreshToken(), TokenType.LOGIN))
+                .token(tokenService.reissueAccessToken(request.getRefreshToken(), TokenType.login))
                 .build();
         return responseService.getSingleResult(newToken);
     }
