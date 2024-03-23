@@ -56,8 +56,8 @@ public class AccountValidatorAspect {
             throw new CustomException(ErrorCode.ValidateAccountFailed);
         }
 
-        log.info("[validateAccount] id: {}", id);
-        log.info("[validateAccount] userName: {}", member.getUsername());
+        log.debug("[validateAccount] id: {}", id);
+        log.debug("[validateAccount] userName: {}", member.getUsername());
         // 토큰값과 비교
         if (!member.getUsername().equals(id))
             throw new CustomException(ErrorCode.IncorrectTokenId);
