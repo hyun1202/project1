@@ -43,7 +43,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Post savePost(String domain, int menu_id, AddPostReq req) {
         // 도메인 조회
-        Setting setting = settingService.findBySetting(domain);
+        Setting setting = settingService.findByDomain(domain);
         // 메뉴 조회
         Menu menu = menuService.findMenuByMenuId(menu_id);
         // 게시글 저장

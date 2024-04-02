@@ -1,17 +1,18 @@
 package com.hyun.jobty.global.mail.service;
 
-import com.hyun.jobty.global.mail.model.Mail;
-import com.hyun.jobty.conf.MailConfig;
 import com.hyun.jobty.advice.exception.CustomException;
 import com.hyun.jobty.advice.exception.ErrorCode;
-import jakarta.mail.Message;
+import com.hyun.jobty.conf.MailConfig;
+import com.hyun.jobty.global.mail.model.Mail;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -32,14 +33,18 @@ public class MailSenderService {
         mail.setUrlParam();
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
-            // 전송 대상
-            message.addRecipients(Message.RecipientType.TO, mail.getReceiverMail());
-            // 제목
-            message.setSubject("Jobty " + mail.getSubject());
-            // 내용
-            message.setText(mail.getMailBody(), mail.getCharset(), mail.getType());
-            // 보내는 사람
-            message.setFrom(new InternetAddress(mailConfig.getSenderEmail(), mail.getSenderName()));
+            // 이미지와 첨부파일 전송을 위해 사용
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true, "UTF-8");
+            // 받는 사람 세팅
+            mimeMessageHelper.addTo(mail.getReceiverMail());
+            // 보내는 사람 세팅
+            mimeMessageHelper.setFrom(new InternetAddress(mailConfig.getSenderEmail(), mail.getSenderName()));
+            // 제목 작성
+            mimeMessageHelper.setSubject("Jobty " + mail.getSubject());
+            // 내용 작성
+            mimeMessageHelper.setText(mail.getMailBody(), true);
+            // 이미지 삽입
+            mimeMessageHelper.addInline("logo", new ClassPathResource("static/images/logo_mail.png"));
             // 메일 전송
             javaMailSender.send(message);
             log.info("{} 메일 전송 완료", mail.getReceiverMail());

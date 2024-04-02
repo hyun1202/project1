@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.io.FileNotFoundException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -48,6 +49,12 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected CommonResult httpRequestMessageException(HttpServletRequest request, Exception e){
         return responseService.getFailResult(-1, "요청 값이 올바르지 않습니다.");
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected CommonResult FileNotFoundException(HttpServletRequest request, Exception e){
+        return responseService.getFailResult(-1, "해당하는 파일이 없습니다.");
     }
 
 

@@ -1,20 +1,40 @@
 package com.hyun.jobty.domain.setting.detail.dto;
 
 import com.hyun.jobty.domain.setting.detail.domain.Setting;
-import com.hyun.jobty.global.file.dto.FileReq;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Getter
 public class SettingDto {
+    private String domain;
+    private String favicon_img;
+    private String blog_name;
+    private String blog_description;
+    private List<String> blog_keyword;
+
+    @Builder
+    SettingDto(Setting setting){
+        this.domain = setting.getDomain();
+        this.favicon_img = setting.getFaviconImg();
+        this.blog_name = setting.getBlogName();
+        this.blog_description = setting.getBlogDescription();
+        this.blog_keyword = setting.getBlogKeyword();
+    }
     @Getter
     public static class AddSettingReq{
+        @Schema(description = "회원 아이디")
+        private String id;
+        @Schema(description = "업로드 완료 후 리턴된 썸네일 이미지 경로")
         private String favicon_img;
+        @Schema(description = "블로그 이름")
         private String blog_name;
+        @Schema(description = "블로그 설명")
         private String blog_description;
+        @Schema(description = "키워드, 여러개일 경우 ,로 구분")
         private String blog_keyword;
     }
 
@@ -54,26 +74,6 @@ public class SettingDto {
         @Builder
         public DomainRes(Setting setting){
             this.domain = setting.getDomain();
-        }
-    }
-
-    @Getter
-    public static class FaviconReq extends FileReq {
-        private String fileName;
-
-        public FaviconReq(List<MultipartFile> multipartFiles){
-            super(multipartFiles);
-        }
-    }
-
-    @Getter
-    public static class FaviconRes {
-        private String favicon;
-
-        public FaviconRes(){}
-        @Builder
-        public FaviconRes(Setting setting){
-            this.favicon = setting.getFaviconImg();
         }
     }
 }

@@ -28,7 +28,7 @@ public class LoggingFilter implements Filter {
 
         // swagger 로깅 제외
         if (servletRequest instanceof HttpServletRequest && servletResponse instanceof HttpServletResponse
-        && !Pattern.matches("^\\/swagger-ui\\/[\\w\\d-._]*$", ((HttpServletRequest) servletRequest).getRequestURI())) {
+        && !Pattern.matches("^\\/(swagger-ui|v3\\/api-docs)+\\/[\\w\\d-._\\/]*]*$", ((HttpServletRequest) servletRequest).getRequestURI())) {
 
             HttpServletRequest request = (HttpServletRequest) servletRequest;
             HttpServletResponse response = (HttpServletResponse) servletResponse;

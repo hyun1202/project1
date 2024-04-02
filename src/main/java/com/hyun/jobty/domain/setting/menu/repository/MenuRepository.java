@@ -15,7 +15,7 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
      * @param domain 도메인
      * @return 해당 도메인의 메뉴 조회
      */
-    List<Menu> findAllBySetting_DomainAndUpperSeqIsNull(String domain);
+    Optional<List<Menu>> findAllBySetting_DomainAndUpperSeqIsNullOrderBySeq(String domain);
     /**
      * 상위 메뉴가 존재하는지 확인
      * @param domain 도메인
