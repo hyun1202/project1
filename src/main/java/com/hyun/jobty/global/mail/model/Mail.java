@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 @Getter
 public class Mail {
+    private final String html_link_str = "link9lKita1lXyQ";
     private String receiverMail;
     private String senderName = "Jobty";
     private String subject;
@@ -125,5 +126,12 @@ public class Mail {
             // 문자열 마지막(&) 자르기
             this.url = newUrl.substring(0, newUrl.length()-1);
         }
+    }
+
+    public String getFullUrl(){
+        if (this.urlParams != null){
+            return this.appHost + "/" + this.url;
+        }
+        return this.appHost;
     }
 }
