@@ -2,7 +2,7 @@ package com.hyun.jobty.conf.swagger;
 
 import com.hyun.jobty.advice.exception.ErrorCode;
 import com.hyun.jobty.conf.swagger.annotation.ApiErrorCode;
-import com.hyun.jobty.global.annotation.AccountValidator;
+import com.hyun.jobty.global.accountValidator.annotation.AccountValidator;
 import com.hyun.jobty.global.response.CommonReason;
 import com.hyun.jobty.global.response.CommonResult;
 import com.hyun.jobty.global.response.ResponseService;

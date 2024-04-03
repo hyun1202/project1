@@ -1,6 +1,6 @@
 package com.hyun.jobty.advice;
 
-import com.hyun.jobty.global.annotation.FileUpload;
+import com.hyun.jobty.global.file.annotation.FileUpload;
 import com.hyun.jobty.global.file.dto.FileReq;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class FileAspect {
-    @Pointcut("@annotation(com.hyun.jobty.global.annotation.FileUpload)")
+    @Pointcut("@annotation(com.hyun.jobty.global.file.annotation.FileUpload)")
     private void fileUpload() {}
 
     /**

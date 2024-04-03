@@ -1,6 +1,6 @@
 package com.hyun.jobty.global.file.controller;
 
-import com.hyun.jobty.global.annotation.AccountValidator;
+import com.hyun.jobty.global.accountValidator.annotation.AccountValidator;
 import com.hyun.jobty.global.file.FileUtil;
 import com.hyun.jobty.global.file.FileVo;
 import com.hyun.jobty.global.file.dto.FileDTO;

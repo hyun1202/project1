@@ -2,6 +2,7 @@ package com.hyun.jobty.domain.setting.menu.dto;
 
 import com.hyun.jobty.domain.setting.menu.domain.BlogMainCategory;
 import com.hyun.jobty.domain.setting.menu.domain.Menu;
+import com.hyun.jobty.global.accountValidator.dto.ValidatorDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
@@ -16,7 +17,7 @@ public class MenuDto {
      * 메뉴 추가 요청 데이터
      */
     @Getter
-    public static class Req {
+    public static class Req extends ValidatorDTO {
         @Nullable
         @Schema(description = "상위 메뉴 번호(소메뉴일 때만 사용)")
         Long upper_menu_seq;
@@ -34,7 +35,6 @@ public class MenuDto {
         int sort_no;
         @Schema(description = "0:대메뉴, 1:소메뉴")
         int depth;
-
         public Req(){}
     }
 
@@ -77,18 +77,47 @@ public class MenuDto {
      * 메뉴 업데이트 요청, 응답 데이터
      */
     @Getter
-    public static class UpdateReq{
-        // 업데이트의 경우 전체 데이터를 가져오기 때문에.....
-        // 전체 main 메뉴와 sub 메뉴를 받아 처리해야 한다.
-        List<UpdateReq.Menu> menus;
+    public static class ListReq extends ValidatorDTO{
+        List<ListReq.Menu> menus;
         @Getter
-        public static class Menu extends Req{
-            @Schema(description = "유저 아이디(이메일)")
-            String id;
-            @Schema(description = "메뉴 아이디")
-            int menu_seq;
+        public static class Menu extends Main{
             @Schema(description = "소메뉴")
             List<Sub> subs;
+
+            public void setSubs(List<Sub> subs) {
+                this.subs = subs;
+            }
+        }
+    }
+
+    @Getter
+    public static class UpdateReq extends ValidatorDTO{
+        @Schema(description = "메뉴 번호")
+        int menu_seq;
+        @Schema(description = "대메뉴 분류 번호(대메뉴일 때만 사용)")
+        @Nullable
+        Long main_category_seq;
+        @Schema(description = "소메뉴 분류명(소메뉴일 때만 사용)")
+        @Nullable
+        String category_name;
+        @Schema(description = "메뉴명")
+        String menu_name;
+    }
+
+    @Getter
+    public static class ListRes extends Res{
+        @Schema(description = "소메뉴")
+        List<Res> subs;
+
+        public ListRes(Menu menu){
+            super(menu);
+            this.menu_seq = menu.getSeq();
+            this.menu_name = menu.getName();
+            this.main_category_seq = (long) menu.getMainCategory().getSeq();
+            this.category_name = menu.getMainCategory().getMainCategoryName();
+            this.group_no = menu.getGroupNo();
+            if (this.depth != 1)
+                this.subs = menu.getSub().stream().map(Res::new).collect(Collectors.toList());
         }
     }
 
@@ -99,6 +128,8 @@ public class MenuDto {
     public static class Read {
         @Schema(description = "대메뉴 번호")
         int menu_seq;
+        @Schema(description = "대메뉴 분류번호")
+        int category_seq;
         @Schema(description = "대메뉴 분류명")
         String category_name;
         @Schema(description = "대메뉴명")
@@ -111,6 +142,7 @@ public class MenuDto {
         public Read(Menu menu){
             this.menu_seq = menu.getSeq();
             this.menu_name = menu.getName();
+            this.category_seq = menu.getMainCategory().getSeq();
             this.category_name = menu.getMainCategory().getMainCategoryName();
             this.group_no = menu.getGroupNo();
             this.subs = menu.getSub().stream().map(Sub::new).collect(Collectors.toList());
@@ -124,10 +156,26 @@ public class MenuDto {
             this.subs = subs.stream().map(Sub::new).collect(Collectors.toList());
         }
     }
+
+    @Getter
+    public static class Main{
+        @Schema(description = "메뉴 번호")
+        int menu_seq;
+        @Schema(description = "대메뉴 분류 번호(대메뉴일 때만 사용)")
+        int main_category_seq;
+        @Schema(description = "메뉴명")
+        String menu_name;
+        @Schema(description = "대메뉴에서의 정렬 값")
+        int group_no;
+        @Schema(description = "0:대메뉴, 1:소메뉴")
+        int depth;
+    }
     @Getter
     public static class Sub {
         @Schema(description = "소메뉴 번호")
         int menu_seq;
+        @Schema(description = "상위 메뉴 번호(소메뉴일 때만 사용)")
+        Long upper_menu_seq;
         @Schema(description = "소메뉴 분류명")
         String category_name;
         @Schema(description = "소메뉴명")
@@ -137,6 +185,7 @@ public class MenuDto {
         public Sub(){}
         public Sub(Menu menu){
             this.menu_seq = menu.getSeq();
+            this.upper_menu_seq = menu.getUpperSeq();
             this.category_name = menu.getSubCategoryName();
             this.menu_name = menu.getName();
             this.sort_no = menu.getSortNo();

@@ -1,6 +1,6 @@
 package com.hyun.jobty.advice;
 
-import com.hyun.jobty.global.annotation.AccountValidator;
+import com.hyun.jobty.global.accountValidator.annotation.AccountValidator;
 import com.hyun.jobty.advice.exception.CustomException;
 import com.hyun.jobty.advice.exception.ErrorCode;
 import com.hyun.jobty.util.Util;
@@ -22,11 +22,11 @@ import java.lang.reflect.Field;
 @Aspect
 @Component
 public class AccountValidatorAspect {
-    @Pointcut("@annotation(com.hyun.jobty.global.annotation.AccountValidator)")
+    @Pointcut("@annotation(com.hyun.jobty.global.accountValidator.annotation.AccountValidator)")
     private void accountValidator() {}
 
     /**
-     * 실행 함수의 {@link com.hyun.jobty.global.annotation.AccountValidator} 어노테이션 값에 해당하는 파라미터명의 값을 가져와 토큰 값과 비교
+     * 실행 함수의 {@link AccountValidator} 어노테이션 값에 해당하는 파라미터명의 값을 가져와 토큰 값과 비교
      * @param joinPoint 실행 함수
      * @return 함수 실행
      * @exception CustomException {@link ErrorCode}.IncorrectTokenId
@@ -56,8 +56,8 @@ public class AccountValidatorAspect {
             throw new CustomException(ErrorCode.ValidateAccountFailed);
         }
 
-        log.debug("[validateAccount] id: {}", id);
-        log.debug("[validateAccount] userName: {}", member.getUsername());
+        log.info("[validateAccount] id: {}", id);
+        log.info("[validateAccount] userName: {}", member.getUsername());
         // 토큰값과 비교
         if (!member.getUsername().equals(id))
             throw new CustomException(ErrorCode.IncorrectTokenId);

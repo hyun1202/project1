@@ -1,4 +1,4 @@
-package com.hyun.jobty.global.annotation;
+package com.hyun.jobty.global.file.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

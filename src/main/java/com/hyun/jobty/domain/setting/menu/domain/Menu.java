@@ -102,4 +102,12 @@ public class Menu extends Timestamped {
             return this.mainCategory.getMainCategoryName();
         return this.subCategoryName;
     }
+
+    public void setMainSortNo(int groupNo){
+        this.groupNo = groupNo;
+    }
+
+    public void setSubSortNo(int sortNo){
+        this.sortNo = sortNo;
+    }
 }
