@@ -67,11 +67,12 @@ public class MenuController {
     @Operation(summary = "메뉴 정렬 수정", description = "도메인에 해당하는 메뉴 정렬 수정")
     @PutMapping(value ="/sort/{domain}")
     @AccountValidator
-    public ResponseEntity<ListResult<MenuDto.ListRes>> updateSortMenu(@PathVariable String domain,
-                                                                          @RequestBody MenuDto.ListReq req){
-        // TODO 전체 메뉴 정렬..
-        List<MenuDto.ListRes> res = menuService.updateSortMenu(domain, req)
-                .stream().map(MenuDto.ListRes::new).toList();
+    public ResponseEntity<ListResult<MenuDto.UpdateSort.Data>> updateSortMenu(@PathVariable String domain,
+                                                                          @RequestBody MenuDto.UpdateSort req){
+        List<MenuDto.UpdateSort.Data> res = menuService.updateSortMenu(domain, req)
+                .stream()
+                .map(MenuDto.UpdateSort.Data::new)
+                .toList();
         return responseService.getListResult(res);
     }
 }

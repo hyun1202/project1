@@ -37,4 +37,10 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
      * @return 그룹에 해당하는 메뉴 리스트
      */
     Optional<Menu> findBySetting_DomainAndGroupNoAndUpperSeqIsNull(String domain, int groupNo);
+    /**
+     * 정렬 변경을 위해 오름차순으로 정렬하여 메뉴 조회
+     * @param domain 도메인
+     * @return 해당 도메인에 있는 오름차순으로 조회된 메뉴
+     */
+    Optional<List<Menu>> findBySetting_DomainOrderBySeq(String domain);
 }

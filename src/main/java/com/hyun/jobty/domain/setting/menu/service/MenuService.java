@@ -8,7 +8,6 @@ import com.hyun.jobty.domain.setting.menu.domain.BlogMainCategory;
 import com.hyun.jobty.domain.setting.menu.domain.Menu;
 import com.hyun.jobty.domain.setting.menu.dto.MenuDto;
 import com.hyun.jobty.domain.setting.menu.repository.BlogMainCategoryRepository;
-import com.hyun.jobty.domain.setting.menu.repository.MenuCustomRepository;
 import com.hyun.jobty.domain.setting.menu.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ import java.util.List;
 public class MenuService {
     private final SettingService settingService;
     private final MenuRepository menuRepository;
-    private final MenuCustomRepository menuCustomRepository;
     private final BlogMainCategoryRepository blogMainCategoryRepository;
 
     public List<Menu> findMenuByDomain(String domain) {
@@ -92,41 +90,23 @@ public class MenuService {
     }
 
     @Transactional
-    public List<Menu> updateSortMenu(String domain, MenuDto.ListReq req){
+    public List<Menu> updateSortMenu(String domain, MenuDto.UpdateSort req){
         // TODO 메뉴 정렬 변경 시 체크할 로직 작성
         // 메뉴 번호를 오름차순으로 정렬
-        List<MenuDto.ListReq.Menu> sortedReqMenus = req.getMenus()
+        List<MenuDto.UpdateSort.Data> sortedReqMenus = req.getMenus()
                 .stream()
-                .sorted(Comparator.comparing(MenuDto.ListReq.Menu::getMenu_seq))
+                .sorted(Comparator.comparing(MenuDto.UpdateSort.Data::getMenu_seq))
                 .toList();
-
-        for (MenuDto.ListReq.Menu menu : sortedReqMenus){
-            List<MenuDto.Sub> sortedSubs = menu.getSubs()
-                    .stream()
-                    .sorted(Comparator.comparing(MenuDto.Sub::getMenu_seq))
-                    .toList();
-            menu.setSubs(sortedSubs);
-        }
-
         // 데이터베이스에서 도메인에 해당하는 메뉴를 오름차순으로 가져온다.
-        List<Menu> menus = menuCustomRepository.findAllMenuOrderMenuSeqByDomain(domain);
-
-        // 정렬되어있으므로 차례대로 돌면서 순서 변경
+        List<Menu> menus = menuRepository.findBySetting_DomainOrderBySeq(domain).orElseThrow(() -> new CustomException(ErrorCode.NoMenuData));
         for (int i=0; i<menus.size(); i++){
-            Menu menu = menus.get(i);
-            List<Menu> subs = menus.get(i).getSub();
-            MenuDto.ListReq.Menu sortedReqMenu = sortedReqMenus.get(i);
-            // 정렬 변경할 때 메뉴가 추가되는 경우가 있지..
-            // 엥ㅋㅋ 여기선 upper_seq 수정이 안되네?
-            // 수정 시에는 upper_seq가 변경이 되는걸로,,,!!!
-            // 정렬 변경 시 추가된 메뉴들이 있다면 예외 발생
-//            if (menus.size() != sortedReqMenus.size()
-//                    || subs.size() != sortedReqMenu.getSubs().size())
-//                throw new CustomException(ErrorCode.FAIL);
-            menu.setMainSortNo(sortedReqMenus.get(i).getGroup_no());
-            for (int j=0; j<subs.size(); j++){
-                Menu sub = menu.getSub().get(j);
-                sub.setSubSortNo(sortedReqMenu.getSubs().get(j).getSort_no());
+            MenuDto.UpdateSort.Data sortedReqMenu = sortedReqMenus.get(i);
+            if (sortedReqMenu.getDepth() == 0){
+                // 메인 메뉴일 경우 group_no 변경
+                menus.get(i).setMainSortNo(sortedReqMenu.getGroup_no());
+            }else{
+                // 서브 메뉴일 경우 upperSeq, sort_no 변경
+                menus.get(i).setSubSortNo(sortedReqMenu.getUpper_menu_seq(), sortedReqMenu.getSort_no());
             }
         }
         return menus;

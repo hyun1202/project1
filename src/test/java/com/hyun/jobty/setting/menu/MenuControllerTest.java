@@ -2,7 +2,7 @@ package com.hyun.jobty.setting.menu;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyun.jobty.domain.setting.menu.domain.Menu;
-import com.hyun.jobty.domain.setting.menu.repository.MenuCustomRepository;
+import com.hyun.jobty.domain.setting.menu.repository.MenuRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,17 +27,16 @@ public class MenuControllerTest {
     @Autowired
     private WebApplicationContext context;
     @Autowired
-    private MenuCustomRepository menuCustomRepository;
-
+    private MenuRepository menuRepository;
     @BeforeEach
     public void mockMvcSetup(){
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
 
-    @DisplayName("querydsl main, sub메뉴 order 테스트")
+    @DisplayName("메뉴 조회 테스트")
     @Test
-    public void customRepositoryTest(){
-        List<Menu> menus = menuCustomRepository.findAllMenuOrderMenuSeqByDomain("apfhd0257");
+    public void menuSelectByDomainTest(){
+        List<Menu> menus = menuRepository.findBySetting_DomainOrderBySeq("apfhd0257").orElseThrow(() -> new RuntimeException());
         System.out.println(menus);
     }
 

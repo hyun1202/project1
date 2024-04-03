@@ -91,6 +91,32 @@ public class MenuDto {
     }
 
     @Getter
+    public static class UpdateSort extends ValidatorDTO{
+        List<UpdateSort.Data> menus;
+        @Getter
+        public static class Data {
+            @Schema(description = "메뉴 번호")
+            int menu_seq;
+            @Schema(description = "상위 메뉴 번호(소메뉴일 때만 사용)")
+            Long upper_menu_seq;
+            @Schema(description = "대메뉴에서의 정렬 값")
+            int group_no;
+            @Schema(description = "소메뉴에서의 정렬 값")
+            int sort_no;
+            @Schema(description = "0:대메뉴, 1:소메뉴")
+            int depth;
+            public Data(Menu menu){
+                this.menu_seq = menu.getSeq();
+                this.upper_menu_seq = menu.getUpperSeq();
+                this.group_no = menu.getGroupNo();
+                this.sort_no = menu.getSortNo();
+                this.depth = menu.getDepth();
+            }
+            public Data(){}
+        }
+    }
+
+    @Getter
     public static class UpdateReq extends ValidatorDTO{
         @Schema(description = "메뉴 번호")
         int menu_seq;
@@ -113,8 +139,10 @@ public class MenuDto {
             super(menu);
             this.menu_seq = menu.getSeq();
             this.menu_name = menu.getName();
-            this.main_category_seq = (long) menu.getMainCategory().getSeq();
-            this.category_name = menu.getMainCategory().getMainCategoryName();
+            if ( menu.getMainCategory() != null) {
+                this.main_category_seq = (long) menu.getMainCategory().getSeq();
+                this.category_name = menu.getMainCategory().getMainCategoryName();
+            }
             this.group_no = menu.getGroupNo();
             if (this.depth != 1)
                 this.subs = menu.getSub().stream().map(Res::new).collect(Collectors.toList());

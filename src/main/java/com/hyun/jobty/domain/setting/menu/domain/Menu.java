@@ -107,7 +107,8 @@ public class Menu extends Timestamped {
         this.groupNo = groupNo;
     }
 
-    public void setSubSortNo(int sortNo){
+    public void setSubSortNo(Long upperSeq, int sortNo){
+        this.upperSeq = upperSeq;
         this.sortNo = sortNo;
     }
 }
