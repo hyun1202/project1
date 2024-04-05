@@ -45,7 +45,7 @@ public class BlogController {
     public ResponseEntity<SingleResult<PostRes>> getPost(@PathVariable("domain") String domain,
                                                          @PathVariable("post_id") int post_id){
         // 현재 게시글 조회
-        Post post = blogService.findPost(domain, post_id);
+        Post post = blogService.readPost(domain, post_id);
         // 이전 게시글 조회
 
         // 다음 게시글 조회
