@@ -19,17 +19,16 @@ public class SendMailTest {
 
     @Test
     public void SendMail() throws InterruptedException {
-        String id = "id123412";
+        String token_id = "id123412";
         String token = "12234token";
-        String receiver = "";
-        mailSenderService.send(
-                Mail.builder()
-                        .receiverMail(receiver)
-                        .subject("이메일 주소 인증")
-                        .url("signup")
-                        .urlParams(List.of(new UrlParam("id", id), new UrlParam("token", token)))
-                        .build()
-        );
+        String receiver = "0157942@gmail.com";
+        Mail mail = Mail.builder()
+                .receiverMail(receiver)
+                .subject("이메일 주소 인증")
+                .url("signup")
+                .urlParams(List.of(new UrlParam("token_id", token_id), new UrlParam("token", token)))
+                .build();
+        mailSenderService.send(mail);
         TimeUnit.SECONDS.sleep(30);
     }
 

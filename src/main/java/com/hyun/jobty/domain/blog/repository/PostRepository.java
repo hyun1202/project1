@@ -1,9 +1,12 @@
 package com.hyun.jobty.domain.blog.repository;
 
 import com.hyun.jobty.domain.blog.domain.Post;
+import com.hyun.jobty.domain.blog.domain.PrevNextInterface;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -24,4 +27,18 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param menu_seq 메뉴번호
      */
     Page<Post> findAllBySetting_domainAndMenu_seq(Pageable page, String domain, int menu_seq);
+
+    @Query(value = "select a.prev_seq, a.next_seq " +
+                " ,(select title from post where post_seq = a.prev_seq) prev_title " +
+                " ,(select title from post where post_seq = a.next_seq) next_title " +
+                "from ( select `domain`, menu_seq, post_seq, " +
+                "LAG(post_seq, 1)  over (partition by `domain` order by post_seq) prev_seq," +
+                "              LEAD(post_seq, 1)  over (partition by `domain` order by post_seq) next_seq " +
+                "       from post " +
+                "     ) a " +
+                "where `domain` = :domain " +
+                "  and menu_seq = :menu_seq " +
+                "  and post_seq = :post_seq "
+            , nativeQuery = true)
+    PrevNextInterface findPrevNextPost(@Param("domain") String domain, @Param("menu_seq") int menu_seq, @Param("post_seq") int post_seq);
 }

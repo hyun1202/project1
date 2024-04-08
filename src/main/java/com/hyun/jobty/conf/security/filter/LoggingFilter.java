@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Component
 public class LoggingFilter implements Filter {
@@ -25,7 +26,10 @@ public class LoggingFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
             throws IOException, ServletException {
 
-        if (servletRequest instanceof HttpServletRequest && servletResponse instanceof HttpServletResponse) {
+        // swagger 로깅 제외
+        if (servletRequest instanceof HttpServletRequest && servletResponse instanceof HttpServletResponse
+        && !Pattern.matches("^\\/(swagger-ui|v3\\/api-docs)+\\/[\\w\\d-._\\/]*]*$", ((HttpServletRequest) servletRequest).getRequestURI())) {
+
             HttpServletRequest request = (HttpServletRequest) servletRequest;
             HttpServletResponse response = (HttpServletResponse) servletResponse;
 
@@ -34,6 +38,7 @@ public class LoggingFilter implements Filter {
 
             chain.doFilter(requestToCache, responseToCache);
 
+            logger.info("request url: {}", request.getRequestURI());
             logger.info("request header: {}", getHeaders(requestToCache));
             logger.info("request body: {}", getRequestBody((ContentCachingRequestWrapper) requestToCache));
             logger.info("response body: {}", getResponseBody(responseToCache));

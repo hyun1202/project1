@@ -21,10 +21,10 @@ import java.util.List;
 public interface ResponseService {
     /**
      * 파일 다운로드 데이터 처리
-     * @param file 파일
+     * @param fileVo 파일 데이터
      * @return ResponseEntity
      */
-    ResponseEntity<Resource> getFileResponseEntity(FileVo file);
+    ResponseEntity<Resource> getFileResponseEntity(FileVo fileVo);
     /**
      * 단건 데이터 처리
      * @param data 단건 데이터

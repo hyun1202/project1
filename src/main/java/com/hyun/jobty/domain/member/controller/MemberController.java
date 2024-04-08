@@ -9,7 +9,7 @@ import com.hyun.jobty.domain.member.dto.MemberDto;
 import com.hyun.jobty.domain.member.dto.TokenRes;
 import com.hyun.jobty.domain.member.service.MemberService;
 import com.hyun.jobty.domain.member.service.TokenService;
-import com.hyun.jobty.global.annotation.AccountValidator;
+import com.hyun.jobty.global.accountValidator.annotation.AccountValidator;
 import com.hyun.jobty.global.mail.model.Mail;
 import com.hyun.jobty.global.mail.model.UrlParam;
 import com.hyun.jobty.global.mail.service.MailSenderService;

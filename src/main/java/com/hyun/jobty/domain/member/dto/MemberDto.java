@@ -33,7 +33,6 @@ public class MemberDto {
     @Builder
     public MemberDto(Member member){
         this.id = member.getUsername();
-//        this.id = member.getEncUserId();    // 유저아이디 암호화한 값을 return
         this.nickname = member.getNickname();
         this.last_login_dt = member.getLast_login_dt();
         this.status = Status.values()[member.getStatus()].name();

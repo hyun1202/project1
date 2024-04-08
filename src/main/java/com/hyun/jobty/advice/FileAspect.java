@@ -1,24 +1,17 @@
 package com.hyun.jobty.advice;
 
-import com.hyun.jobty.advice.exception.CustomException;
-import com.hyun.jobty.advice.exception.ErrorCode;
-import com.hyun.jobty.global.annotation.FileUpload;
+import com.hyun.jobty.global.file.annotation.FileUpload;
 import com.hyun.jobty.global.file.dto.FileReq;
-import com.hyun.jobty.global.file.FileUtil;
-import com.hyun.jobty.util.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Aspect
 @Component
 public class FileAspect {
-    @Pointcut("@annotation(com.hyun.jobty.global.annotation.FileUpload)")
+    @Pointcut("@annotation(com.hyun.jobty.global.file.annotation.FileUpload)")
     private void fileUpload() {}
 
     /**
@@ -33,31 +26,31 @@ public class FileAspect {
      *    }
      * </pre>
      */
-    @Around("fileUpload()")
-    public Object fileUpload(ProceedingJoinPoint joinPoint) throws Throwable{
-        // 파일 파라미터명 확인, FileReq 상속 받아 사용
-        String fileParam = "multipartFiles";
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Object[] args = joinPoint.getArgs();
-        String[] paramNames = signature.getParameterNames();
-        FileUpload fileUpload = signature.getMethod().getAnnotation(FileUpload.class);
-        // 데이터 세팅
-        String pathId = fileUpload.path();
-        String idParam = fileUpload.idParam();
-        boolean idUsage = fileUpload.idUsage();
-        String memberId = "";
-        FileUtil fileUtil = new FileUtil();
-
-        int idIndex = Util.findIndexArrayValue(paramNames, idParam);
-        if (idIndex != -1 && idUsage) {
-            memberId = (String) args[idIndex];
-        }
-
-        FileReq fileReq = (FileReq) args[Util.findIndexArrayValue(paramNames, fileParam)];
-        if (!fileUtil.uploadFiles(fileReq.getMultipartFiles(), memberId, pathId)) {
-            throw new CustomException(ErrorCode.FailedSaveFile);
-        }
-
-        return joinPoint.proceed(args);
-    }
+//    @Around("fileUpload()")
+//    public Object fileUpload(ProceedingJoinPoint joinPoint) throws Throwable{
+//        // 파일 파라미터명 확인, FileReq 상속 받아 사용
+//        String fileParam = "multipartFiles";
+//        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+//        Object[] args = joinPoint.getArgs();
+//        String[] paramNames = signature.getParameterNames();
+//        FileUpload fileUpload = signature.getMethod().getAnnotation(FileUpload.class);
+//        // 데이터 세팅
+//        String pathId = fileUpload.path();
+//        String idParam = fileUpload.idParam();
+//        boolean idUsage = fileUpload.idUsage();
+//        String memberId = "";
+//        FileUtil fileUtil = new FileUtil();
+//
+//        int idIndex = Util.findIndexArrayValue(paramNames, idParam);
+//        if (idIndex != -1 && idUsage) {
+//            memberId = (String) args[idIndex];
+//        }
+//
+//        FileReq fileReq = (FileReq) args[Util.findIndexArrayValue(paramNames, fileParam)];
+//        if (!fileUtil.uploadFiles(fileReq.getMultipartFiles(), memberId, pathId)) {
+//            throw new CustomException(ErrorCode.FailedSaveFile);
+//        }
+//
+//        return joinPoint.proceed(args);
+//    }
 }

@@ -2,7 +2,7 @@ package com.hyun.jobty.conf.swagger;
 
 import com.hyun.jobty.advice.exception.ErrorCode;
 import com.hyun.jobty.conf.swagger.annotation.ApiErrorCode;
-import com.hyun.jobty.global.annotation.AccountValidator;
+import com.hyun.jobty.global.accountValidator.annotation.AccountValidator;
 import com.hyun.jobty.global.response.CommonReason;
 import com.hyun.jobty.global.response.CommonResult;
 import com.hyun.jobty.global.response.ResponseService;
@@ -117,6 +117,9 @@ public class SwaggerConfig {
             // get 이외의 경우 400 적용
             if (getMapping == null) {
                 setResponse("400", responses, ErrorCode.RequiredFields.getCommonReason());
+            }else{
+                // get일 경우 400 제거
+                responses.remove("400");
             }
 
             // accountValidator 어노테이션이 붙은 메소드는 401 메시지 출력
@@ -139,8 +142,8 @@ public class SwaggerConfig {
 
             // 500 적용
             setResponse("500", responses, ErrorCode.FAIL.getCommonReason());
-
-//            operation.setResponses(new ApiResponses());
+            // 404 제거
+            responses.remove("404");
             return operation;
         };
     }

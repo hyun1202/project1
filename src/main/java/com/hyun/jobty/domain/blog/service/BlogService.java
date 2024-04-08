@@ -6,6 +6,7 @@ import com.hyun.jobty.domain.blog.domain.Comment;
 import com.hyun.jobty.domain.blog.domain.Post;
 import com.hyun.jobty.domain.blog.dto.AddCommentReq;
 import com.hyun.jobty.domain.blog.dto.AddPostReq;
+import com.hyun.jobty.domain.blog.dto.PostRes;
 import com.hyun.jobty.domain.blog.repository.CommentRepository;
 import com.hyun.jobty.domain.blog.repository.PostRepository;
 import com.hyun.jobty.domain.member.domain.Member;
@@ -57,6 +58,7 @@ public class BlogService{
                 .build();
         return postRepository.save(post);
     }
+
 
     public Comment saveComment(int post_seq, String member_seq, AddCommentReq req) {
         Post post = postRepository.findById(post_seq).orElseThrow(() -> new CustomException(ErrorCode.NotFoundPost));

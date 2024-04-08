@@ -1,4 +1,4 @@
-package com.hyun.jobty.global.annotation;
+package com.hyun.jobty.global.accountValidator.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AccountValidator {
-    String value() default "id";
+    String value() default "req";   // 파라미터명 기본값 id=>req 변경
     ElementType type() default ElementType.FIELD;   // id 기본값 parameter=>field 변경
     String field() default "id";
 }

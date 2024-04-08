@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-import java.util.UUID;
-
 
 @TestPropertySource(locations = "classpath:application-dev.yaml")
 @SpringBootTest(properties = "spring.profiles.active:dev")
@@ -24,7 +22,6 @@ public class MemberServiceTest {
     @DisplayName("멤버를 조회한다")
     @Test
     void test(){
-        UUID.
         Member member = memberRepository.findById("afca70d5-2999-4ec5-bea2-a1a04263a9d2").orElseThrow(() -> new CustomException(ErrorCode.FAIL));
         Assertions.assertEquals(member.getUserId(), "0157942@gmail.com");
     }

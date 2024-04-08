@@ -51,6 +51,8 @@ public class Setting extends Timestamped {
      * @return 키워드 목록
      */
     public List<String> getBlogKeyword(){
+        if (this.blogKeyword == null)
+            return null;
         List<String> keyword = List.of(this.blogKeyword.split(","));
         return keyword;
     }

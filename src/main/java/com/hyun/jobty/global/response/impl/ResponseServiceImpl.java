@@ -3,9 +3,9 @@ package com.hyun.jobty.global.response.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyun.jobty.advice.exception.CustomException;
 import com.hyun.jobty.advice.exception.ErrorCode;
-import com.hyun.jobty.global.response.*;
 import com.hyun.jobty.global.file.FileUtil;
 import com.hyun.jobty.global.file.FileVo;
+import com.hyun.jobty.global.response.*;
 import com.hyun.jobty.util.Util;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.io.Resource;
@@ -27,19 +27,21 @@ public class ResponseServiceImpl implements ResponseService {
         return Util.responseEntityOf(data);
     }
 
-    public ResponseEntity<Resource> getFileResponseEntity(FileVo file){
+    public ResponseEntity<Resource> getFileResponseEntity(FileVo fileVo){
         HttpHeaders headers = new HttpHeaders();
         String oriFileName = "";
-        if (file.oriFileName().equals("") || file.oriFileName() == null){
-            oriFileName = Util.random() + "." + Util.getFileExtension(file.saveFilePath());
+        if (fileVo.oriFileName().equals("") || fileVo.oriFileName() == null){
+            oriFileName = Util.random() + "." + fileVo.extension();
         }
+        // 파일 다운로드 헤더 작성
         String encodedOriginalFileName = UriUtils.encode(oriFileName, StandardCharsets.UTF_8);
         String contentDisposition = "attachment; filename=\"" + encodedOriginalFileName + "\"";
         headers.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition);
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         UrlResource resource;
         try{
-            resource = new FileUtil().downloadFile(file);
+            //파일 다운로드
+            resource = new FileUtil().downloadFile(fileVo.saveFilePath());
             return Util.responseEntityOf(resource, headers);
         }catch (Exception e) {
             throw new CustomException(ErrorCode.FAIL);
