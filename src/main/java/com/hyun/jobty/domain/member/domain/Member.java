@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,17 +14,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
+@Table(name = "member1")
 public class Member extends Timestamped implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_seq")
-    private int seq;
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "member_seq")
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name="uuid2", strategy = "uuid2")
+    private UUID userSeq;
+    private String seq;
+//    private int seq;
     @Column(name = "email", nullable = false, unique = true)
-    private String id;
+    private String userId;
     @Column(name = "pwd")
     private String pwd;
     private String nickname;
@@ -35,9 +42,9 @@ public class Member extends Timestamped implements UserDetails {
     private int status;
 
     @Builder
-    public Member(int seq, String id, String pwd, String nickname, String roles, LocalDateTime last_login_dt, int status){
+    public Member(String seq, String userId, String pwd, String nickname, String roles, LocalDateTime last_login_dt, int status){
         this.seq = seq;
-        this.id = id;
+        this.userId = userId;
         this.pwd = pwd;
         this.nickname = nickname;
         this.roles = roles;
@@ -77,7 +84,7 @@ public class Member extends Timestamped implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.id;
+        return this.userId;
     }
 
     /**
@@ -85,7 +92,7 @@ public class Member extends Timestamped implements UserDetails {
      * @return 암호화된 ID값
      */
     public String getEncUserId(){
-        return CipherUtil.encrypt(CipherUtil.ID, this.id);
+        return CipherUtil.encrypt(CipherUtil.ID, this.userId);
     }
 
     /**
@@ -93,7 +100,7 @@ public class Member extends Timestamped implements UserDetails {
      * @return 복호화된 ID값
      */
     public String getDecUserId(){
-        return CipherUtil.decrypt(CipherUtil.ID, this.id);
+        return CipherUtil.decrypt(CipherUtil.ID, this.userId);
     }
 
     /**

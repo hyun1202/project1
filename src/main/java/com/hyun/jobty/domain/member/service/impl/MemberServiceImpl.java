@@ -33,7 +33,8 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public Member findByMemberSeq(int seq) {
-        return memberRepository.findById(seq).orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
+        return null;
+//        return memberRepository.findById(seq).orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
     }
 
     /**
@@ -172,7 +173,7 @@ public class MemberServiceImpl implements MemberService {
         member.memberActivate();
         // 토큰 확인 완료하였으므로 토큰 삭제
         tokenService.deleteToken(token_id);
-        return member.getId();
+        return member.getUserId();
     }
 
     /**
@@ -218,7 +219,7 @@ public class MemberServiceImpl implements MemberService {
         if (this.findDuplicateId(addMemberReq.getId())){
             throw new CustomException(ErrorCode.DuplicatedId);
         }
-        Member member = Member.builder().id(addMemberReq.getId())
+        Member member = Member.builder().userId(addMemberReq.getId())
                 .pwd(bCryptPasswordEncoder.encode(addMemberReq.getPwd()))
                 .nickname(addMemberReq.getNickname())
                 .last_login_dt(LocalDateTime.now())
@@ -251,6 +252,6 @@ public class MemberServiceImpl implements MemberService {
     public String withdraw(String member_id) {
         Member member = findByMemberId(member_id);
         member.memberWithdraw();
-        return member.getId();
+        return member.getUserId();
     }
 }

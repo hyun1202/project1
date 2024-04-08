@@ -19,7 +19,7 @@ public class MemberDetailServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-        return memberRepository.findById(id)
+        return memberRepository.findByUserId(id)
                 .map(this::checkAcccount)
                 .orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
     }

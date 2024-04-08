@@ -75,7 +75,7 @@ public class BlogController {
     public ResponseEntity<SingleResult<CommentRes>> addComment(@PathVariable("post_id") int post_id,
                                                                @RequestBody AddCommentReq req){
         // 작성자 작성을 위한 member 조회
-        int member_seq = memberService.findByMemberId(req.getWriter()).getSeq();
+        String member_seq = memberService.findByMemberId(req.getWriter()).getSeq();
         CommentRes res = CommentRes.builder()
                 .comment(blogService.saveComment(post_id, member_seq, req))
                 .build();

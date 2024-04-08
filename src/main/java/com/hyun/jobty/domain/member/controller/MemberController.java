@@ -72,7 +72,7 @@ public class MemberController {
         // 1. 계정 생성(임시)
         Member member = memberService.signup(req);
         // 2. 토큰 생성 및 메일 전송
-        sendMail("signup", tokenService.createToken(member.getId(), TokenType.signup));
+        sendMail("signup", tokenService.createToken(member.getUserId(), TokenType.signup));
         return responseService.getSingleResult(req.getId());
     }
 
@@ -158,6 +158,6 @@ public class MemberController {
     public ResponseEntity<SingleResult<String>> changePassword(@RequestParam String token_id,
                                                                @RequestParam String token,
                                                                @RequestBody MemberDto.Change req){
-        return responseService.getSingleResult(memberService.tokenCheckAndUpdatePassword(token_id, token, req).getId());
+        return responseService.getSingleResult(memberService.tokenCheckAndUpdatePassword(token_id, token, req).getUserId());
     }
 }

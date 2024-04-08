@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface SettingRepository extends JpaRepository<Setting, String> {
     Optional<Setting> findByDomain(String domain);
-    Optional<Setting> findByMemberSeq(int seq);
+    Optional<Setting> findByMemberSeq(String seq);
     boolean existsByMember(Member member);
 }

@@ -182,7 +182,7 @@ public class TokenServiceImpl implements TokenService {
      * @return 생성한 토큰 문자열
      */
     private String getAccessToken(String member_id){
-        Member member = Member.builder().id(member_id).build();
+        Member member = Member.builder().userId(member_id).build();
         return tokenProvider.generateToken(member);
     }
 
@@ -192,7 +192,7 @@ public class TokenServiceImpl implements TokenService {
      * @return 생성한 리프레시 토큰 문자열
      */
     private String getRefreshToken(String member_id){
-        Member member = Member.builder().id(member_id).build();
+        Member member = Member.builder().userId(member_id).build();
         return tokenProvider.generateRefreshToken(member);
     }
 
