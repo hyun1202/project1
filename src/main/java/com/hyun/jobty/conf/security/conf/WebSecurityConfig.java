@@ -47,6 +47,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/signin/**", "/signup/**", "/api/token/**", "/account/check/**", "/account/find/**", "/account/change/**", "/account/mail-resend").permitAll()  // 해당하는 경로는 누구나 접근 가능
                                 .requestMatchers(HttpMethod.GET,"/images/**", "/files/**").permitAll()
                                 .requestMatchers("/menu/sort/**").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/post/**").permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api-docs/**", "/swagger-resources/**, ").permitAll()
                                 .requestMatchers("/favicon.ico", "/static/**").permitAll()
                                 .anyRequest().authenticated() // 그 이외 경로는 인가는 필요하지 않으나 인증이 성공되어야 함.

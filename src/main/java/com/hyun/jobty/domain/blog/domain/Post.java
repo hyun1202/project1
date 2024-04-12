@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
 public class Post extends Timestamped {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_seq")
-    private int seq;
+    private Long seq;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_seq")
     private Menu menu;
@@ -33,9 +34,13 @@ public class Post extends Timestamped {
     @SQLRestriction("group_depth = 0")
     @OrderBy("seq asc")
     private List<Comment> comments;
+    @Formula("(select count(1) from post_like a where a.post_seq = post_seq)")
+    private Long likeCnt;
+    @Formula("(select count(1) from post_view a where a.post_seq = post_seq)")
+    private Long viewCnt;
 
     @Builder
-    public Post(int seq, Menu menu, Setting setting, String thumbnail, String title, String content, List<Comment> comments){
+    public Post(Long seq, Menu menu, Setting setting, String thumbnail, String title, String content, List<Comment> comments){
         this.seq = seq;
         this.menu = menu;
         this.setting = setting;

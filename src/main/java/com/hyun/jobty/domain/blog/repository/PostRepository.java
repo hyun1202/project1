@@ -15,10 +15,10 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Integer> {
     /**
      * 도메인에 해당하는 게시글 조회
-     * @param seq 게시글 번호
+     * @param post_seq 게시글 번호
      * @param domain 도메인
      */
-    Optional<Post> findBySeqAndSetting_domain(int seq, String domain);
+    Optional<Post> findBySetting_domainAndSeq(String domain, Long post_seq);
 
     /**
      * 페이징 처리한 게시글 조회
@@ -31,8 +31,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query(value = "select a.prev_seq, a.next_seq " +
                 " ,(select title from post where post_seq = a.prev_seq) prev_title " +
                 " ,(select title from post where post_seq = a.next_seq) next_title " +
-                "from ( select `domain`, menu_seq, post_seq, " +
-                "LAG(post_seq, 1)  over (partition by `domain` order by post_seq) prev_seq," +
+                "from (select `domain`, menu_seq, post_seq, " +
+                "              LAG(post_seq, 1)  over (partition by `domain` order by post_seq) prev_seq," +
                 "              LEAD(post_seq, 1)  over (partition by `domain` order by post_seq) next_seq " +
                 "       from post " +
                 "     ) a " +
@@ -40,5 +40,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 "  and menu_seq = :menu_seq " +
                 "  and post_seq = :post_seq "
             , nativeQuery = true)
-    PrevNextInterface findPrevNextPost(@Param("domain") String domain, @Param("menu_seq") int menu_seq, @Param("post_seq") int post_seq);
+    PrevNextInterface findPrevNextPost(@Param("domain") String domain, @Param("menu_seq") int menu_seq, @Param("post_seq") Long post_seq);
 }
