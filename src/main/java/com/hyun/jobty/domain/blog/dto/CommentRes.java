@@ -31,7 +31,7 @@ public class CommentRes{
     @Builder
     public CommentRes(Comment comment){
         this.comment_id = comment.getSeq();
-        this.id = comment.getMember().getUserId();
+        this.id = comment.getMember().getEmail();
         this.nickname = comment.getMember().getNickname();
         this.content = comment.getContent();
         this.is_private = comment.getPrivateYn();

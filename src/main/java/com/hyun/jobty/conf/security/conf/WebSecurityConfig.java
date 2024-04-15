@@ -5,8 +5,8 @@ import com.hyun.jobty.conf.security.filter.TokenAuthenticationFilter;
 import com.hyun.jobty.conf.security.handler.AccessDeniedHandler;
 import com.hyun.jobty.conf.security.handler.AuthenticationEntryPoint;
 import com.hyun.jobty.conf.security.jwt.TokenProvider;
+import com.hyun.jobty.domain.member.service.MemberDetailService;
 import com.hyun.jobty.domain.member.service.TokenService;
-import com.hyun.jobty.domain.member.service.impl.MemberDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +30,7 @@ import java.util.List;
 public class WebSecurityConfig {
     private final TokenProvider tokenProvider;
     private final TokenService tokenService;
-    private final MemberDetailServiceImpl memberDetailServiceImpl;
+    private final MemberDetailService memberDetailService;
     private final AccessDeniedHandler accessDeniedHandler;
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
@@ -86,7 +86,7 @@ public class WebSecurityConfig {
     public DaoAuthenticationProvider daoAuthenticationProvider() throws Exception {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 
-        daoAuthenticationProvider.setUserDetailsService(memberDetailServiceImpl);
+        daoAuthenticationProvider.setUserDetailsService(memberDetailService);
         // 비밀번호 암호화 후 넘기는 부분
         daoAuthenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
 

@@ -14,23 +14,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
 
+// TODO UserDetails 걷어내기
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
-@Table(name = "member1")
+@Table(name = "member")
 public class Member extends Timestamped implements UserDetails {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "member_seq")
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name="uuid2", strategy = "uuid2")
-    private UUID userSeq;
+    @Column(name = "member_uid")
     private String seq;
-//    private int seq;
     @Column(name = "email", nullable = false, unique = true)
-    private String userId;
+    private String email;
     @Column(name = "pwd")
     private String pwd;
     private String nickname;
@@ -42,9 +39,9 @@ public class Member extends Timestamped implements UserDetails {
     private int status;
 
     @Builder
-    public Member(String seq, String userId, String pwd, String nickname, String roles, LocalDateTime last_login_dt, int status){
+    public Member(String seq, String email, String pwd, String nickname, String roles, LocalDateTime last_login_dt, int status){
         this.seq = seq;
-        this.userId = userId;
+        this.email = email;
         this.pwd = pwd;
         this.nickname = nickname;
         this.roles = roles;
@@ -84,7 +81,7 @@ public class Member extends Timestamped implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.userId;
+        return this.email;
     }
 
     /**
@@ -92,7 +89,7 @@ public class Member extends Timestamped implements UserDetails {
      * @return 암호화된 ID값
      */
     public String getEncUserId(){
-        return CipherUtil.encrypt(CipherUtil.ID, this.userId);
+        return CipherUtil.encrypt(CipherUtil.ID, this.email);
     }
 
     /**
@@ -100,7 +97,7 @@ public class Member extends Timestamped implements UserDetails {
      * @return 복호화된 ID값
      */
     public String getDecUserId(){
-        return CipherUtil.decrypt(CipherUtil.ID, this.userId);
+        return CipherUtil.decrypt(CipherUtil.ID, this.email);
     }
 
     /**

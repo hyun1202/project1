@@ -37,7 +37,7 @@ public class TokenProviderTest {
     void generateToken(){
         // given
         Member testMember = memberRepository.save(Member.builder()
-                .userId("test123")
+                .email("test123")
                 .pwd(bCryptPasswordEncoder.encode("test123"))
                 .last_login_dt(LocalDateTime.now())
                 .build());
@@ -45,7 +45,7 @@ public class TokenProviderTest {
         String token = tokenProvider.generateToken(testMember, Duration.ofDays(14));
         // then
         String id = tokenProvider.getMemberId(token);
-        Assertions.assertThat(id).isEqualTo(testMember.getUserId());
+        Assertions.assertThat(id).isEqualTo(testMember.getEmail());
     }
 
     @DisplayName("validToken(): 만료된 토큰일 때 유효성 검증 실패")

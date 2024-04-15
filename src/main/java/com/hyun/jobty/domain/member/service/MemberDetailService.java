@@ -1,19 +1,19 @@
-package com.hyun.jobty.domain.member.service.impl;
+package com.hyun.jobty.domain.member.service;
 
-import com.hyun.jobty.domain.member.domain.Member;
 import com.hyun.jobty.advice.exception.CustomException;
 import com.hyun.jobty.advice.exception.ErrorCode;
+import com.hyun.jobty.domain.member.domain.Member;
 import com.hyun.jobty.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
-@Component("userDetailsService")
-public class MemberDetailServiceImpl implements UserDetailsService {
+@Service
+public class MemberDetailService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
