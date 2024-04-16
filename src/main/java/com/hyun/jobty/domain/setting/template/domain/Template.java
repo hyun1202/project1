@@ -15,7 +15,7 @@ public class Template extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int seq;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_seq")
+    @JoinColumn(name = "member_uid")
     private Member member;
     private String thumbnail;
     @Column(name = "template_name")

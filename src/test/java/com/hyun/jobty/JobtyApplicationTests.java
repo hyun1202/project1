@@ -1,5 +1,7 @@
 package com.hyun.jobty;
 
+import com.hyun.jobty.advice.exception.CustomException;
+import com.hyun.jobty.advice.exception.ErrorCode;
 import com.hyun.jobty.util.cipher.CipherUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,5 +51,10 @@ class JobtyApplicationTests {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Test
+    void exceptionTest(){
+        throw new CustomException(ErrorCode.FAIL);
     }
 }

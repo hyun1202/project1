@@ -17,7 +17,7 @@ public class Setting extends Timestamped {
     @Id
     private String domain;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_seq")
+    @JoinColumn(name = "member_uid")
     private Member member;
     @Column(name = "favicon_img")
     private String faviconImg;

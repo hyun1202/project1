@@ -25,7 +25,7 @@ public class Member extends Timestamped implements UserDetails {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name="uuid2", strategy = "uuid2")
     @Column(name = "member_uid")
-    private String seq;
+    private String uid;
     @Column(name = "email", nullable = false, unique = true)
     private String email;
     @Column(name = "pwd")
@@ -39,8 +39,8 @@ public class Member extends Timestamped implements UserDetails {
     private int status;
 
     @Builder
-    public Member(String seq, String email, String pwd, String nickname, String roles, LocalDateTime last_login_dt, int status){
-        this.seq = seq;
+    public Member(String uid, String email, String pwd, String nickname, String roles, LocalDateTime last_login_dt, int status){
+        this.uid = uid;
         this.email = email;
         this.pwd = pwd;
         this.nickname = nickname;

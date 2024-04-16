@@ -19,36 +19,21 @@ public class MemberDetailService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-        return memberRepository.findByUserId(id)
-                .map(this::checkAcccount)
+        return memberRepository.findByEmail(id)
+                .map(this::checkAccount)
                 .orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
     }
 
     /**
-     * 계정 정보 확인 (만료, 탈퇴 여부 등)
+     * 계정 정보 확인 (탈퇴 여부 등)
      * @param member {@link Member}
      * @return 로그인 계정
-     * @exception CustomException {@link ErrorCode}
+     * @exception CustomException {@link ErrorCode} AccountDisabled
      */
-    private UserDetails checkAcccount(Member member){
-        if (!checkAccountNonExpired(member))
-            throw new CustomException(ErrorCode.AccountExpired);
+    private UserDetails checkAccount(Member member){
         if (!checkAccountIsEnabled(member))
             throw new CustomException(ErrorCode.AccountDisabled);
         return member;
-    }
-
-    /**
-     * 계정이 만료되었는지 확인
-     * @param member {@link Member} 로그인 계정
-     * @return 만료 시 true 아니면 false
-     */
-    private boolean checkAccountNonExpired(Member member){
-        if (!member.isAccountNonExpired()) {
-            // 계정 만료 시 실행 로직 작성
-            return false;
-        }
-        return true;
     }
 
     /**

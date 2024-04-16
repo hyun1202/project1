@@ -25,25 +25,24 @@ public class MemberService {
 
     /**
      * 회원 식별 번호로 회원 정보를 찾는다.
-     * @param seq 회원 식별 번호
+     * @param uid 회원 식별 번호
      * @return 회원 정보
      * @exception CustomException {@link ErrorCode} UserNotFound
      */
     
-    public Member findByMemberSeq(int seq) {
-        return null;
-//        return memberRepository.findById(seq).orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
+    public Member findByMemberUid(String uid) {
+        return memberRepository.findById(uid).orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
     }
 
     /**
      * 회원 아이디(이메일)로 회원 정보를 찾는다.
-     * @param id 회원 아이디(이메일)
+     * @param email 회원 이메일
      * @return 회원 정보
      * @exception CustomException {@link ErrorCode} UserNotFound
      */
     
-    public Member findByMemberId(String id) {
-        return memberRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.UserNotFound));
     }
 
     /**
@@ -53,21 +52,23 @@ public class MemberService {
      */
     
     public boolean findDuplicateId(String id){
-        return memberRepository.existsById(id);
+        return memberRepository.existsByEmail(id);
     }
 
     /**
      * 메일 재전송을 위해 계정 인증 상태를 확인한다. 인증 상태라면 예외를 발생한다.
-     * @param id 회원 아이디
+     * @param email 회원 이메일
      * @return 회원 정보
      * @exception CustomException {@link ErrorCode} AccountActivated 계정 인증 상태
      */
     
-    public Member checkAccountStatus(String id) {
-        Member member = findByMemberId(id);
+    public Member checkAccountStatus(String email, TokenType type) {
+        Member member = findByEmail(email);
         // 계정 인증 여부 확인
         if (!member.isTemporaryAccount(member.getStatus()))
             throw new CustomException(ErrorCode.AccountActivated);
+        // 토큰 생성 여부 확인
+        tokenService.checkByTokenId(email, type);
         return member;
     }
 
@@ -95,7 +96,7 @@ public class MemberService {
     
     public MemberDto.FindRes findAccountPwd(String member_id) {
         String msg = CommonCode.SendConfirmEMail.getMsg();
-        findByMemberId(member_id);
+        findByEmail(member_id);
         return MemberDto.FindRes.builder()
                 .id(member_id)
                 .msg(msg)
@@ -128,7 +129,7 @@ public class MemberService {
      */
     
     public void checkTokenAndAccountId(String member_id, TokenType type) {
-        tokenService.createTokenIdAndCheckByTokenId(member_id, type);
+        tokenService.checkByTokenId(member_id, type);
     }
 
     /**
@@ -145,7 +146,7 @@ public class MemberService {
         // 토큰 검증
         if (!tokenService.validToken(token_id, token, TokenType.change))
             throw new CustomException(ErrorCode.UnexpectedToken);
-        Member member = findByMemberId(tokenService.findByTokenId(token_id).getMemberId());
+        Member member = findByEmail(tokenService.findByTokenId(token_id).getMemberId());
         // 비밀번호 업데이트
         member.updatePassword(bCryptPasswordEncoder.encode(req.getPwd()));
         // 사용한 토큰은 재사용 못하도록 삭제
@@ -154,19 +155,20 @@ public class MemberService {
     }
 
     /**
-     * 인증이 완료한 계정 활성화를 위해 토큰 체크 및 계정 활성화
+     * 인증이 완료된 계정 활성화를 위해 토큰 체크 및 계정 활성화
      * @param token_id 토큰 아이디
      * @param token 토큰
      * @return 활성화한 계정 아이디
+     * @exception CustomException {@link ErrorCode} TokenUserNotFound 토큰 오류
      */
     
     @Transactional
     public String tokenCheckAndAccountActivate(String token_id, String token) {
         // 토큰 검증
         if (!tokenService.validToken(token_id, token, TokenType.signup))
-            throw new CustomException(ErrorCode.UnexpectedToken);
+            throw new CustomException(ErrorCode.TokenUserNotFound);
         // 토큰에 해당하는 회원 가져오기
-        Member member = findByMemberId(tokenService.findByTokenId(token_id).getMemberId());
+        Member member = findByEmail(tokenService.findByTokenId(token_id).getMemberId());
         // 계정 활성화
         member.memberActivate();
         // 토큰 확인 완료하였으므로 토큰 삭제
@@ -186,19 +188,17 @@ public class MemberService {
     @Transactional
     public Member signin(MemberDto.LoginReq loginReq) {
         // id 체크 로직
-        Member member = memberRepository.findById(loginReq.getId()).orElseThrow(() -> new CustomException(ErrorCode.LoginFailed));
+        Member member = memberRepository.findByEmail(loginReq.getId()).orElseThrow(() -> new CustomException(ErrorCode.LoginFailed));
         // pw 체크 로직
         if (!bCryptPasswordEncoder.matches(loginReq.getPwd(), member.getPwd())){
             throw new CustomException(ErrorCode.IncorrectPassword);
         }
-
-        // 만료 및 탈퇴 여부 확인
+        // 임시 계정 여부 확인
+        if (member.getStatus() == Status.TEMPORARY.ordinal())
+            throw new CustomException(ErrorCode.NotActivatedAccount);
+        // 탈퇴 여부 확인
         if (!member.isEnabled())
             throw new CustomException(ErrorCode.AccountDisabled);
-
-        if (!member.isAccountNonExpired())
-            throw new CustomException(ErrorCode.AccountExpired);
-
         member.setLast_login_dt(LocalDateTime.now());
 
         return member;
@@ -248,7 +248,7 @@ public class MemberService {
     
     @Transactional
     public String withdraw(String member_id) {
-        Member member = findByMemberId(member_id);
+        Member member = findByEmail(member_id);
         member.memberWithdraw();
         return member.getEmail();
     }

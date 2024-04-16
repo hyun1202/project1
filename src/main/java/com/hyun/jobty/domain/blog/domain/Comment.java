@@ -26,7 +26,7 @@ public class Comment extends Timestamped {
     private String content;
     @Column(name = "private_yn")
     private String privateYn;
-    @JoinColumn(name = "member_seq")
+    @JoinColumn(name = "member_uid")
     @OneToOne(fetch = FetchType.LAZY)
     private Member member;
     @Column(name = "upper_comment_no")

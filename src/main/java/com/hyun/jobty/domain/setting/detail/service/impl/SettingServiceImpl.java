@@ -23,17 +23,17 @@ public class SettingServiceImpl implements SettingService {
 
     @Override
     public Setting findByDomain(String domain){
-        return settingRepository.findByDomain(domain).orElseThrow(()->new CustomException(ErrorCode.FAIL));
+        return settingRepository.findByDomain(domain).orElseThrow(()->new CustomException(ErrorCode.DomainNotFound));
     }
 
     @Override
     public Setting findById(String id) {
-        return findByMemberSeq(id);
+        return findByMemberUid(id);
     }
 
     @Override
     public Setting saveDomain(@Valid SettingDto.DomainReq req) {
-        Member member = memberService.findByMemberId(req.getId());
+        Member member = memberService.findByEmail(req.getId());
 
         // 계정에 도메인 데이터 있는지 확인
         if (settingRepository.existsByMember(member)){
@@ -70,12 +70,12 @@ public class SettingServiceImpl implements SettingService {
 
     @Override
     public FileVo findByFaviconImage(String id){
-        Setting setting = findByMemberSeq(id);
+        Setting setting = findByMemberUid(id);
         return new FileVo("", "", setting.getFaviconImg(), "");
     }
 
-    private Setting findByMemberSeq(String id){
-        Member member = memberService.findByMemberId(id);
-        return settingRepository.findByMemberSeq(member.getSeq()).orElseThrow(()->new CustomException(ErrorCode.DomainNotFound));
+    private Setting findByMemberUid(String id){
+        Member member = memberService.findByEmail(id);
+        return settingRepository.findByMember_Uid(member.getUid()).orElseThrow(()->new CustomException(ErrorCode.DomainNotFound));
     }
 }

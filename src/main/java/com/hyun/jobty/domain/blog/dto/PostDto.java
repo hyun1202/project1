@@ -10,25 +10,29 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-public class PostRes {
-    private int post_seq;
+public class PostDto {
+    private Long post_seq;
     private String title;
     private String thumbnail;
     private String content;
-    private List<CommentRes> comment;
+    private List<CommentDto.Res> comment;
+    private Long likeCnt;
+    private Long viewCnt;
     @Builder
-    public PostRes(Post post){
+    public PostDto(Post post){
         this.post_seq = post.getSeq();
         this.title = post.getTitle();
         this.thumbnail = post.getThumbnail();
         this.content = post.getContent();
-        this.comment = post.getComments() != null? post.getComments().stream().map(CommentRes::new).collect(Collectors.toList()) : null;
+        this.comment = post.getComments() != null? post.getComments().stream().map(CommentDto.Res::new).collect(Collectors.toList()) : null;
+        this.likeCnt = post.getLikeCnt();
+        this.viewCnt = post.getViewCnt();
     }
     @Getter
-    public static class PrevNextRes {
+    public static class PrevNextDto {
         private PrevNext pre;
         private PrevNext next;
-        public PrevNextRes(PrevNextInterface entity){
+        public PrevNextDto(PrevNextInterface entity){
             this.pre = PrevNext.builder()
                     .post_seq(entity.getPrev_seq())
                     .title(entity.getPrev_title())
@@ -45,5 +49,25 @@ public class PostRes {
     public static class PrevNext {
         private Long post_seq;
         private String title;
+    }
+
+    @Getter
+    @Builder @AllArgsConstructor
+    public static class Read {
+        public PostDto post;
+        public PrevNextDto prevNext;
+    }
+
+    @Getter
+    public static class AddReq {
+        private String thumbnail;
+        private String title;
+        private String content;
+        public AddReq(){}
+        public AddReq(String thumbnail, String title, String content){
+            this.thumbnail = thumbnail;
+            this.title = title;
+            this.content = content;
+        }
     }
 }
