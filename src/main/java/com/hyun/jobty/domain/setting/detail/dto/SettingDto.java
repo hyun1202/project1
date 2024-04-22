@@ -1,6 +1,7 @@
 package com.hyun.jobty.domain.setting.detail.dto;
 
 import com.hyun.jobty.domain.setting.detail.domain.Setting;
+import com.hyun.jobty.global.accountValidator.dto.ValidatorDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -55,14 +56,12 @@ public class SettingDto {
     }
 
     @Getter
-    public static class DomainReq{
-        private String id;
+    public static class DomainReq extends ValidatorDto {
         @NotNull
         private String domain;
 
         @Builder
-        public DomainReq(String id, String domain){
-            this.id = id;
+        public DomainReq(String domain){
             this.domain = domain;
         }
     }

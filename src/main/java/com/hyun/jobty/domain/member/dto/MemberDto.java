@@ -21,8 +21,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class MemberDto {
+    @Schema(description = "유저uid")
+    private String uid;
     @Schema(description = "아이디")
-    private String id;
+    private String email;
     @Schema(description = "닉네임")
     private String nickname;
     @Schema(description = "마지막 로그인 날짜")
@@ -32,7 +34,8 @@ public class MemberDto {
 
     @Builder
     public MemberDto(Member member){
-        this.id = member.getUsername();
+        this.uid = member.getUid();
+        this.email = member.getUsername();
         this.nickname = member.getNickname();
         this.last_login_dt = member.getLast_login_dt();
         this.status = Status.values()[member.getStatus()].name();
@@ -46,13 +49,13 @@ public class MemberDto {
     public static class LoginReq {
         @NotNull
         @Schema(description = "아이디")
-        private String id;
+        private String email;
         @Schema(description = "비밀번호")
         @NotNull
         private String pwd;
 
         public LoginReq(String id, String pwd){
-            this.id = id;
+            this.email = id;
             this.pwd = pwd;
         }
     }
@@ -65,7 +68,7 @@ public class MemberDto {
         @NotNull
         @Pattern(regexp = "[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}$", message = "아이디는 이메일 형태로 입력되어져야 합니다.")
         @Schema(description = "이메일")
-        private String id;
+        private String email;
         @NotNull
         @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[!@#$%^&*])[\\da-zA-Z!@#$%^&*]{8,20}", message = "비밀번호는 영문, 숫자, 특수문자 포함 8~20자로 입력해야 합니다.")
         @Schema(description = "비밀번호(영문,숫자,특수문자 포함 8~20자)")
@@ -74,8 +77,8 @@ public class MemberDto {
         private String nickname;
 
         public AddMemberReq(){}
-        public AddMemberReq(String id, String pwd, String nickname){
-            this.id = id;
+        public AddMemberReq(String email, String pwd, String nickname){
+            this.email = email;
             this.pwd = pwd;
             this.nickname = nickname;
         }
@@ -121,24 +124,24 @@ public class MemberDto {
         @Pattern(regexp = "[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}$", message = "올바른 이메일 형태가 아니거나 아이디에 허용된 특수문자(-_.) 외 문자열이 입력되었습니다.")
         @Schema(description = "이메일")
         @NotNull
-        private String id;
+        private String email;
         public FindReq() {}
-        public FindReq(String id){
-            this.id = id;
+        public FindReq(String email){
+            this.email = email;
         }
 
     }
 
     @Getter
     public static class FindRes{
-        private String id;
+        private String email;
         private String msg;
 
         public FindRes(){}
 
         @Builder
-        public FindRes(String id, String msg){
-            this.id = id;
+        public FindRes(String email, String msg){
+            this.email = email;
             this.msg = msg;
         }
     }

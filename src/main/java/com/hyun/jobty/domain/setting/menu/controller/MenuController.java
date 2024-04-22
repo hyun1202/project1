@@ -4,7 +4,7 @@ import com.hyun.jobty.domain.setting.menu.domain.Menu;
 import com.hyun.jobty.domain.setting.menu.dto.MenuDto;
 import com.hyun.jobty.domain.setting.menu.service.MenuService;
 import com.hyun.jobty.global.accountValidator.annotation.AccountValidator;
-import com.hyun.jobty.global.accountValidator.dto.ValidatorDTO;
+import com.hyun.jobty.global.accountValidator.dto.ValidatorDto;
 import com.hyun.jobty.global.response.ListResult;
 import com.hyun.jobty.global.response.ResponseService;
 import com.hyun.jobty.global.response.SingleResult;
@@ -29,7 +29,7 @@ public class MenuController {
     @GetMapping(value ="/{domain}")
     @AccountValidator(value = "dto")
     public ResponseEntity<ListResult<MenuDto.ListRes>> getMenu(@PathVariable("domain") String domain,
-                                                            ValidatorDTO dto){
+                                                            ValidatorDto dto){
         List<Menu> menu = menuService.findMenuByDomain(domain);
         List<MenuDto.ListRes> res = menu.stream().map(MenuDto.ListRes::new).toList();
         return responseService.getListResult(res);
@@ -50,7 +50,7 @@ public class MenuController {
     @AccountValidator(value = "dto")
     public ResponseEntity<SingleResult<Integer>> removeMenu(@PathVariable("domain") String domain,
                                                             @PathVariable("menu_id") int menu_id,
-                                                            ValidatorDTO dto){
+                                                            ValidatorDto dto){
         return responseService.getSingleResult(menuService.deleteSingleMenu(domain, menu_id));
     }
 

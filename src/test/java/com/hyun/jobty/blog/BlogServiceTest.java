@@ -72,7 +72,7 @@ public class BlogServiceTest {
         Long post_seq = 2L;
         String id = "apfhd02579@naver.com";
         LikeDto likeDto = new LikeDto();
-        likeDto.setId(id);
+        likeDto.setUid(id);
         //when
         blogService.postLikeSaveOrDelete(post_seq, likeDto);
         //then

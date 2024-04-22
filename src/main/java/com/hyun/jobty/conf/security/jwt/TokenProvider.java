@@ -20,7 +20,7 @@ import java.util.Set;
 public class TokenProvider{
     private static final String AUTHORITIES_KEY = "auth";
     private final JwtProperties jwtProperties;
-    private final String CLAIM_ID = "id";
+    private final String CLAIM_EMAIL = "email";
     private final Duration TOKEN_EXPIRED_AT = Duration.ofHours(2);
     private final Duration REFRESH_EXPIRED_AT = Duration.ofHours(12);
 
@@ -45,9 +45,10 @@ public class TokenProvider{
         return Jwts.builder()
                 .header().type("JWT").and()
                 .claims()
-                    .add(CLAIM_ID, member.getEmail())
+                .add(CLAIM_EMAIL, member.getEmail())
                 .add(AUTHORITIES_KEY, "ROLE_USER")
-                    .subject(member.getEmail())
+                // uid 설정
+                    .subject(member.getUid())
                     .issuedAt(now)
                     .expiration(expiry)
                     .issuer(jwtProperties.getIssuer())
@@ -83,13 +84,23 @@ public class TokenProvider{
     }
 
     /**
-     * 토큰에 담겨있는 MemberID 조회
+     * 토큰에 담겨있는 MemberEmail 조회
      * @param token 토큰 정보
      * @return memberID
      */
-    public String getMemberId(String token){
+    public String getMemberEmail(String token){
         Claims claims = getClaims(token);
-        return claims.get(CLAIM_ID, String.class);
+        return claims.get(CLAIM_EMAIL, String.class);
+    }
+
+    /**
+     * 토큰에 담겨있는 MemberUID 조회
+     * @param token 토큰 정보
+     * @return memberUid
+     */
+    public String getMemberUid(String token){
+        Claims claims = getClaims(token);
+        return claims.getSubject();
     }
 
     // 클레임 조회

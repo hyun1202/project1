@@ -6,11 +6,11 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum TokenType {
-    login(60 * 60, true, ""),
-    signup(60 * 30, false, "signup"),
-    change(60 * 30, false, "account/change/pwd"),
+    login(60 * 60 * 1000L, true, ""),
+    signup(60 * 30 * 1000L, false, "signup"),
+    change(60 * 30 * 1000L, false, "account/change/pwd"),
     ;
-    private int exp;
+    private Long exp;
     private boolean refreshTokenRequired;
     private String url;
 }

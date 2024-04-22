@@ -84,7 +84,7 @@ public class MemberService {
             msg = CommonCode.EmailExists.getMsg();
         }
         return MemberDto.FindRes.builder()
-                .id(member_id)
+                .email(member_id)
                 .msg(msg)
                 .build();
     }
@@ -98,7 +98,7 @@ public class MemberService {
         String msg = CommonCode.SendConfirmEMail.getMsg();
         findByEmail(member_id);
         return MemberDto.FindRes.builder()
-                .id(member_id)
+                .email(member_id)
                 .msg(msg)
                 .build();
     }
@@ -146,7 +146,7 @@ public class MemberService {
         // 토큰 검증
         if (!tokenService.validToken(token_id, token, TokenType.change))
             throw new CustomException(ErrorCode.UnexpectedToken);
-        Member member = findByEmail(tokenService.findByTokenId(token_id).getMemberId());
+        Member member = findByEmail(tokenService.findByTokenId(token_id).getEmail());
         // 비밀번호 업데이트
         member.updatePassword(bCryptPasswordEncoder.encode(req.getPwd()));
         // 사용한 토큰은 재사용 못하도록 삭제
@@ -168,7 +168,7 @@ public class MemberService {
         if (!tokenService.validToken(token_id, token, TokenType.signup))
             throw new CustomException(ErrorCode.TokenUserNotFound);
         // 토큰에 해당하는 회원 가져오기
-        Member member = findByEmail(tokenService.findByTokenId(token_id).getMemberId());
+        Member member = findByEmail(tokenService.findByTokenId(token_id).getEmail());
         // 계정 활성화
         member.memberActivate();
         // 토큰 확인 완료하였으므로 토큰 삭제
@@ -188,7 +188,7 @@ public class MemberService {
     @Transactional
     public Member signin(MemberDto.LoginReq loginReq) {
         // id 체크 로직
-        Member member = memberRepository.findByEmail(loginReq.getId()).orElseThrow(() -> new CustomException(ErrorCode.LoginFailed));
+        Member member = memberRepository.findByEmail(loginReq.getEmail()).orElseThrow(() -> new CustomException(ErrorCode.LoginFailed));
         // pw 체크 로직
         if (!bCryptPasswordEncoder.matches(loginReq.getPwd(), member.getPwd())){
             throw new CustomException(ErrorCode.IncorrectPassword);
@@ -214,10 +214,10 @@ public class MemberService {
     @Transactional
     public Member signup(MemberDto.AddMemberReq addMemberReq) {
         // 중복 아이디 확인
-        if (this.findDuplicateId(addMemberReq.getId())){
+        if (this.findDuplicateId(addMemberReq.getEmail())){
             throw new CustomException(ErrorCode.DuplicatedId);
         }
-        Member member = Member.builder().email(addMemberReq.getId())
+        Member member = Member.builder().email(addMemberReq.getEmail())
                 .pwd(bCryptPasswordEncoder.encode(addMemberReq.getPwd()))
                 .nickname(addMemberReq.getNickname())
                 .last_login_dt(LocalDateTime.now())

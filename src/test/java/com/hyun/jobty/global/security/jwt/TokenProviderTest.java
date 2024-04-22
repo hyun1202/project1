@@ -44,7 +44,7 @@ public class TokenProviderTest {
         // when
         String token = tokenProvider.generateToken(testMember, Duration.ofDays(14));
         // then
-        String id = tokenProvider.getMemberId(token);
+        String id = tokenProvider.getMemberEmail(token);
         Assertions.assertThat(id).isEqualTo(testMember.getEmail());
     }
 
@@ -90,7 +90,7 @@ public class TokenProviderTest {
         Assertions.assertThat(((UserDetails) authentication.getPrincipal()).getUsername()).isEqualTo(userId);
     }
 
-    @DisplayName("getMemberId(): 토큰으로 유저 ID 가져오기")
+    @DisplayName("getEmail(): 토큰으로 유저 ID 가져오기")
     @Test
     void getMemberId(){
         // given
@@ -100,7 +100,7 @@ public class TokenProviderTest {
                 .build()
                 .createToken(jwtProperties);
         // when
-        String userIdByToken = tokenProvider.getMemberId(token);
+        String userIdByToken = tokenProvider.getMemberEmail(token);
         // then
         Assertions.assertThat(userIdByToken).isEqualTo(userId);
     }

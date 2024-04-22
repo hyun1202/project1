@@ -23,19 +23,19 @@ public class SettingController {
     private final SettingService settingService;
     private final ResponseService responseService;
 
-    @Operation(summary = "도메인 조회", description = "id로 된 도메인을 조회합니다.")
+    @Operation(summary = "도메인 조회", description = "uid로 된 도메인을 조회합니다.")
     @AccountValidator(type = ElementType.PARAMETER)
     @ApiErrorCode(ErrorCode.DomainNotFound)
-    @GetMapping("/domain")
-    public ResponseEntity<SingleResult<SettingDto>> findDomainById(@RequestParam String id){
+    @GetMapping("/domain/{id}")
+    public ResponseEntity<SingleResult<SettingDto>> findDomainById(@PathVariable("id") String uid){
         return responseService.getSingleResult(
                 SettingDto.builder()
-                        .setting(settingService.findById(id))
+                        .setting(settingService.findByMemberUid(uid))
                         .build()
         );
     }
 
-    @Operation(summary = "도메인 저장", description = "id에 해당 도메인을 저장합니다.")
+    @Operation(summary = "도메인 저장", description = "해당 uid에 도메인 정보를 저장합니다.")
     @AccountValidator
     @PostMapping("/domain")
     public ResponseEntity<SingleResult<SettingDto.DomainRes>> saveDomain(@RequestBody SettingDto.DomainReq req){

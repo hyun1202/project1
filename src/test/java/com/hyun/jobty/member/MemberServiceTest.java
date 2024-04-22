@@ -58,8 +58,8 @@ public class MemberServiceTest {
         MemberDto.FindReq req = new MemberDto.FindReq(email);
         //when
         // 토큰 생성 후 토큰 재발급
-        Token preToken = tokenService.createToken(req.getId(), type);
-        Token token = tokenService.createToken(req.getId(), type);
+        Token preToken = tokenService.createToken(req.getEmail(), type);
+        Token token = tokenService.createToken(req.getEmail(), type);
         //then
         // 토큰 타입 및 일치 확인
         boolean token1 = tokenService.validToken(preToken.getId(), preToken.getAccessToken(), type);

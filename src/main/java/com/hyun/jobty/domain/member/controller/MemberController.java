@@ -55,7 +55,7 @@ public class MemberController {
                 .build();
         // 2. 토큰 정보
         TokenRes token = TokenRes.builder()
-                .token(tokenService.createToken(req.getId(), TokenType.login))
+                .token(tokenService.createJwtToken(member))
                 .build();
         MemberDto.LoginRes result = MemberDto.LoginRes.builder()
                 .member(member)
@@ -72,7 +72,7 @@ public class MemberController {
         Member member = memberService.signup(req);
         // 2. 토큰 생성 및 메일 전송
         sendMail(TokenType.signup.getUrl(), tokenService.createToken(member.getEmail(), TokenType.signup));
-        return responseService.getSingleResult(req.getId());
+        return responseService.getSingleResult(req.getEmail());
     }
 
     /**
@@ -82,7 +82,7 @@ public class MemberController {
     private void sendMail(String url, Token token){
         mailSenderService.send(
                 Mail.builder()
-                        .receiverMail(token.getMemberId())
+                        .receiverMail(token.getEmail())
                         .subject("이메일 주소 인증")
                         .url(url)
                         .urlParams(List.of(new UrlParam("token_id", token.getId()), new UrlParam("token", token.getAccessToken())))
@@ -97,10 +97,10 @@ public class MemberController {
                                                            @RequestBody @Valid MemberDto.FindReq req){
         // 1.메일 발송 여부 확인 (토큰 확인)
         // TODO 이전에 발송된 회원가입 주소는 왜 클릭이 되는가...?
-        memberService.checkAccountStatus(req.getId(), type);
+        memberService.checkAccountStatus(req.getEmail(), type);
         // 2. 토큰 생성 및 메일 전송
-        sendMail(type.getUrl(), tokenService.createToken(req.getId(), type));
-        return responseService.getSingleResult(req.getId());
+        sendMail(type.getUrl(), tokenService.createToken(req.getEmail(), type));
+        return responseService.getSingleResult(req.getEmail());
     }
 
     @Operation(summary = "회원가입 이메일 확인", description = "이메일에 발송된 링크 클릭 시 계정 활성화")
@@ -115,7 +115,7 @@ public class MemberController {
     @PostMapping("signout")
     @AccountValidator
     public ResponseEntity<SingleResult<String>> signout(@RequestBody MemberDto.FindReq req){
-        return responseService.getSingleResult(memberService.signout(req.getId()));
+        return responseService.getSingleResult(memberService.signout(req.getEmail()));
     }
 
     @Operation(summary = "회원탈퇴", description = "(토큰 값과 id값 비교 후 실행) id에 해당하는 회원 탈퇴 후 탈퇴한 아이디 리턴(리턴 값은 임시)")
@@ -123,30 +123,30 @@ public class MemberController {
     @ApiErrorCode(ErrorCode.UserNotFound)
     @AccountValidator
     public ResponseEntity<SingleResult<String>> withdraw(@RequestBody MemberDto.FindReq req){
-        return responseService.getSingleResult(memberService.withdraw(req.getId()));
+        return responseService.getSingleResult(memberService.withdraw(req.getEmail()));
     }
 
     @PostMapping("/account/check/id")
     @Operation(summary = "중복 아이디 확인", description = "id에 해당하는 회원 검색 후 중복 아이디 여부 리턴 및 계정 확인")
     public ResponseEntity<SingleResult<MemberDto.Check>> checkId(@RequestBody @Valid
                                                                  MemberDto.FindReq req){
-        return responseService.getSingleResult(memberService.checkDuplicateId(req.getId()));
+        return responseService.getSingleResult(memberService.checkDuplicateId(req.getEmail()));
     }
 
     @Operation(summary = "아이디 찾기", description = "아이디 찾기")
     @ApiErrorCode(ErrorCode.UserNotFound)
     @PostMapping("/account/find/id")
     public ResponseEntity<SingleResult<MemberDto.FindRes>> findId(@RequestBody @Valid MemberDto.FindReq req){
-        return responseService.getSingleResult(memberService.findAccountId(req.getId()));
+        return responseService.getSingleResult(memberService.findAccountId(req.getEmail()));
     }
 
     @Operation(summary = "계정 비밀번호 찾기", description = "아이디 확인 후 해당 이메일로 변경 링크 메일 발송, 메일 발송의 경우 비동기로 진행하므로 항상 성공됨(프론트에서 확인 불가)")
     @ApiErrorCode(ErrorCode.UserNotFound)
     @PostMapping("/account/find/pwd")
     public ResponseEntity<SingleResult<MemberDto.FindRes>> findPassword(@RequestBody @Valid MemberDto.FindReq req){
-        MemberDto.FindRes res = memberService.findAccountPwd(req.getId());
+        MemberDto.FindRes res = memberService.findAccountPwd(req.getEmail());
         // 토큰 생성 및 메일 전송
-        sendMail("account/change/pwd", tokenService.createToken(res.getId(), TokenType.change));
+        sendMail("account/change/pwd", tokenService.createToken(res.getEmail(), TokenType.change));
         return responseService.getSingleResult(res);
     }
 

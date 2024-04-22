@@ -2,7 +2,7 @@ package com.hyun.jobty.domain.setting.menu.dto;
 
 import com.hyun.jobty.domain.setting.menu.domain.BlogMainCategory;
 import com.hyun.jobty.domain.setting.menu.domain.Menu;
-import com.hyun.jobty.global.accountValidator.dto.ValidatorDTO;
+import com.hyun.jobty.global.accountValidator.dto.ValidatorDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
@@ -17,7 +17,7 @@ public class MenuDto {
      * 메뉴 추가 요청 데이터
      */
     @Getter
-    public static class Req extends ValidatorDTO {
+    public static class Req extends ValidatorDto {
         @Nullable
         @Schema(description = "상위 메뉴 번호(소메뉴일 때만 사용)")
         Long upper_menu_seq;
@@ -77,7 +77,7 @@ public class MenuDto {
      * 메뉴 업데이트 요청, 응답 데이터
      */
     @Getter
-    public static class ListReq extends ValidatorDTO{
+    public static class ListReq extends ValidatorDto {
         List<ListReq.Menu> menus;
         @Getter
         public static class Menu extends Main{
@@ -91,7 +91,7 @@ public class MenuDto {
     }
 
     @Getter
-    public static class UpdateSort extends ValidatorDTO{
+    public static class UpdateSort extends ValidatorDto {
         List<UpdateSort.Data> menus;
         @Getter
         public static class Data {
@@ -117,7 +117,7 @@ public class MenuDto {
     }
 
     @Getter
-    public static class UpdateReq extends ValidatorDTO{
+    public static class UpdateReq extends ValidatorDto {
         @Schema(description = "메뉴 번호")
         int menu_seq;
         @Schema(description = "대메뉴 분류 번호(대메뉴일 때만 사용)")

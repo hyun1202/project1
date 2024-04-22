@@ -1,8 +1,8 @@
 package com.hyun.jobty.advice;
 
-import com.hyun.jobty.global.accountValidator.annotation.AccountValidator;
 import com.hyun.jobty.advice.exception.CustomException;
 import com.hyun.jobty.advice.exception.ErrorCode;
+import com.hyun.jobty.global.accountValidator.annotation.AccountValidator;
 import com.hyun.jobty.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -40,7 +40,7 @@ public class AccountValidatorAspect {
         Object[] args = joinPoint.getArgs();
         String[] paramNames = signature.getParameterNames();
         String id = "-1";
-        UserDetails member = null;
+        UserDetails userDetails = null;
         try{
             int index = Util.findIndexArrayValue(paramNames, paramName);
             // type 확인 후 파라미터명에 해당하는 실제 값을 가져옴
@@ -51,15 +51,15 @@ public class AccountValidatorAspect {
                 field.setAccessible(true);
                 id = (String) ReflectionUtils.getField(field, args[index]);
             }
-            member = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         }catch (Exception e){
             throw new CustomException(ErrorCode.ValidateAccountFailed);
         }
 
         log.info("[validateAccount] id: {}", id);
-        log.info("[validateAccount] userName: {}", member.getUsername());
+        log.info("[validateAccount] userName: {}", userDetails.getUsername());
         // 토큰값과 비교
-        if (!member.getUsername().equals(id))
+        if (!(userDetails.getUsername().equals(id)))
             throw new CustomException(ErrorCode.IncorrectTokenId);
     }
 }

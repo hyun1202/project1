@@ -117,7 +117,7 @@ public class BlogService{
      * @param req 요청 데이터(유저 아이디)
      */
     public boolean postLikeSaveOrDelete(Long post_seq, LikeDto req){
-        Member member = memberService.findByEmail(req.getId());
+        Member member = memberService.findByEmail(req.getUid());
         Like like = Like.builder()
                 .postSeq(post_seq)
                 .memberUid(member.getUid())
