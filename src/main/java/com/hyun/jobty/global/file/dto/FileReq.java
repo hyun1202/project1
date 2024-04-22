@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 public class FileReq {
-    @Schema(description = "유저 아이디(이메일)")
+    @Schema(description = "유저 uid")
     private String id;
     @Schema(description = "type이 setting이 아닐 때 사용")
     private Long post_id;
@@ -24,7 +24,7 @@ public class FileReq {
         this.multipartFiles = multipartFiles;
     }
 
-    public String EncId() {
+    public String getEncId() {
         return CipherUtil.encrypt(CipherUtil.NORMAL, this.id);
     }
 

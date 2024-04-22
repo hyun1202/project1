@@ -1,6 +1,7 @@
 package com.hyun.jobty.domain.setting.detail.domain;
 
 import com.hyun.jobty.domain.member.domain.Member;
+import com.hyun.jobty.domain.setting.detail.dto.SettingDto;
 import com.hyun.jobty.domain.setting.template.domain.Template;
 import com.hyun.jobty.domain.member.domain.Timestamped;
 import jakarta.persistence.*;
@@ -53,8 +54,7 @@ public class Setting extends Timestamped {
     public List<String> getBlogKeyword(){
         if (this.blogKeyword == null)
             return null;
-        List<String> keyword = List.of(this.blogKeyword.split(","));
-        return keyword;
+        return List.of(this.blogKeyword.split(","));
     }
 
     /**
@@ -62,7 +62,17 @@ public class Setting extends Timestamped {
      * @return 템플릿 사용 목록
      */
     public List<String> getTemplateUse(){
-        List<String> template = List.of(this.templateUse.split(","));
-        return template;
+        return List.of(this.templateUse.split(","));
+    }
+
+    /**
+     * 도메인을 제외한 설정 정보를 업데이트 한다.
+     * @param blogInfo 업데이트 내용 (이미지 경로, 블로그명, 설명, 키워드)
+     */
+    public void updateBlogInfo(SettingDto.AddSettingReq blogInfo){
+        this.faviconImg = blogInfo.getFavicon_img();
+        this.blogName = blogInfo.getBlog_name();
+        this.blogDescription = blogInfo.getBlog_description();
+        this.blogKeyword = blogInfo.getBlog_keyword();
     }
 }

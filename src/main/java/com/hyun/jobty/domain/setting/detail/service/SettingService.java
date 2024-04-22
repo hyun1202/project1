@@ -69,17 +69,14 @@ public class SettingService {
     /**
      * 설정 정보를 업데이트 한다
      * @param domain 도메인
-     * @param req 업데이트 내용 (이미지 경로, 블로그명, 블로그 설명, 키워드)
+     * @param req 업데이트 내용 (이미지 경로, 블로그명, 설명, 키워드)
      * @return 업데이트된 설정 정보
      */
     @Transactional
     public Setting updateDetailSetting(String domain, SettingDto.AddSettingReq req) {
         Setting setting = findByDomain(domain);
-
-        setting.setFaviconImg(req.getFavicon_img());
-        setting.setBlogName(req.getBlog_name());
-        setting.setBlogDescription(req.getBlog_description());
-        setting.setBlogKeyword(req.getBlog_keyword());
+        // 설정 정보 업데이트
+        setting.updateBlogInfo(req);
         return setting;
     }
 }

@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Tag(name = "File API", description = " 파일 변경을 원하면 파일 삭제 후 다시 저장할 것, Last update: 2024.03.27")
+@Tag(name = "File API", description = "type의 setting: 블로그 썸네일 이미지, blog: 블로그 내 첨부 이미지, 파일 변경을 원하면 파일 삭제 후 다시 저장해주세요. Last update: 2024.03.27")
 @RequiredArgsConstructor
 @RestController
 public class FileController {
@@ -45,7 +45,7 @@ public class FileController {
         if(req.getPost_id() != null)
             post_path = File.separator + req.strPostId();
 
-        String path = req.EncId() + File.separator + type.name() + post_path;
+        String path = req.getEncId() + File.separator + type.name() + post_path;
         // file 저장
         List<FileVo> files = fileService.uploadFiles(path, req);
         return responseService.getListResult(files.stream().map(FileDTO::new).collect(Collectors.toList()));
@@ -65,9 +65,11 @@ public class FileController {
     }
 
     @Operation(summary = "이미지 파일 출력(img src)", description = "이미지로 저장된 데이터를 html형식으로 출력")
-    @GetMapping("/images/**")
+    @GetMapping("/files/images/**")
     public Resource showImage(HttpServletRequest request) {
-        String path = request.getRequestURI().split(request.getContextPath() + "/images")[1];
+        // uid로 받고 하위 경로가 있어야함
+        // 실제 파일 저장은 uid를 암호화해서 저장됨!!
+        String path = request.getRequestURI().split(request.getContextPath() + "/files/images")[1];
         return fileService.showImage(path);
     }
 

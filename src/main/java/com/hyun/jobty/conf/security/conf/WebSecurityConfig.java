@@ -45,7 +45,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers("/signin/**", "/signup/**", "/api/token/**", "/account/check/**", "/account/find/**", "/account/change/**", "/account/mail-resend").permitAll()  // 해당하는 경로는 누구나 접근 가능
-                                .requestMatchers(HttpMethod.GET,"/images/**", "/files/**").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/files/**").permitAll()
                                 .requestMatchers("/menu/sort/**").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/post/**").permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api-docs/**", "/swagger-resources/**, ").permitAll()

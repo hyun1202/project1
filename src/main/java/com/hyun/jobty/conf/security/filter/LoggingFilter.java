@@ -26,26 +26,35 @@ public class LoggingFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
             throws IOException, ServletException {
 
+        boolean isServletReqOrRes = servletRequest instanceof HttpServletRequest && servletResponse instanceof HttpServletResponse;
         // swagger 로깅 제외
-        if (servletRequest instanceof HttpServletRequest && servletResponse instanceof HttpServletResponse
-        && !Pattern.matches("^\\/(swagger-ui|v3\\/api-docs)+\\/[\\w\\d-._\\/]*]*$", ((HttpServletRequest) servletRequest).getRequestURI())) {
-
-            HttpServletRequest request = (HttpServletRequest) servletRequest;
-            HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-            HttpServletRequest requestToCache = new ContentCachingRequestWrapper(request);
-            HttpServletResponse responseToCache = new ContentCachingResponseWrapper(response);
-
-            chain.doFilter(requestToCache, responseToCache);
-
-            logger.info("request url: {}", request.getRequestURI());
-            logger.info("request header: {}", getHeaders(requestToCache));
-            logger.info("request body: {}", getRequestBody((ContentCachingRequestWrapper) requestToCache));
-            logger.info("response body: {}", getResponseBody(responseToCache));
-
-        } else {
+        if (!isServletReqOrRes) {
             chain.doFilter(servletRequest, servletResponse);
+            return;
         }
+        String url =  ((HttpServletRequest) servletRequest).getRequestURI();
+        if (Pattern.matches("^\\/(swagger-ui|v3\\/api-docs)+\\/[\\w\\d-._\\/]*]*$", url)){
+            chain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
+        if (Pattern.matches("^[-._=~!@#/$\\w\\d]+\\.(png|jpg|jpeg|svg|gif)$", url)){
+            chain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+
+        HttpServletRequest requestToCache = new ContentCachingRequestWrapper(request);
+        HttpServletResponse responseToCache = new ContentCachingResponseWrapper(response);
+
+        chain.doFilter(requestToCache, responseToCache);
+
+        logger.info("request url: {}", request.getRequestURI());
+        logger.info("request header: {}", getHeaders(requestToCache));
+        logger.info("request body: {}", getRequestBody((ContentCachingRequestWrapper) requestToCache));
+        logger.info("response body: {}", getResponseBody(responseToCache));
     }
 
     private Map<String, Object> getHeaders(HttpServletRequest request) {
