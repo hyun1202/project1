@@ -1,5 +1,6 @@
 package com.hyun.jobty.domain.blog.domain;
 
+import com.hyun.jobty.domain.blog.dto.PostDto;
 import com.hyun.jobty.domain.member.domain.Timestamped;
 import com.hyun.jobty.domain.setting.detail.domain.Setting;
 import com.hyun.jobty.domain.setting.menu.domain.Menu;
@@ -48,5 +49,9 @@ public class Post extends Timestamped {
         this.title = title;
         this.content = content;
         this.comments = comments;
+    }
+
+    public void updatePost(Long menu_seq, PostDto.AddReq updatePost){
+        this.menu.
     }
 }

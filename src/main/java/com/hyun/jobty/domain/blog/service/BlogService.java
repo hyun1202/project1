@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -42,7 +43,8 @@ public class BlogService{
         Page<Post> list = postRepository.findAllBySetting_domainAndMenu_seq(page, domain, menu_seq);
         if (list == null)
             throw new CustomException(ErrorCode.NotFoundPost);
-        return list;    }
+        return list;
+    }
 
     /**
      * 도메인과 게시글 번호에 해당하는 게시글을 가져온다.
@@ -89,6 +91,15 @@ public class BlogService{
                 .content(req.getContent())
                 .build();
         return postRepository.save(post);
+    }
+
+    @Transactional
+    public Post updatePost(String domain, Long menu_seq, Long post_seq, PostDto.AddReq req){
+        // 게시글 조회
+        Post updatePost = findPost(domain, post_seq);
+        // 게시글 업데이트
+
+        return null;
     }
 
     public Comment saveComment(int post_seq, String member_uid, CommentDto.AddReq req) {
