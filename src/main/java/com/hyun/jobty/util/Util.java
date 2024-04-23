@@ -3,7 +3,6 @@ package com.hyun.jobty.util;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -57,12 +56,5 @@ public class Util {
                 return index;
         }
         return index;
-    }
-
-    public static String getFileExtension(String fileName){
-        String extension = StringUtils.getFilenameExtension(fileName);
-        if (extension == null)
-            return "";
-        return extension;
     }
 }

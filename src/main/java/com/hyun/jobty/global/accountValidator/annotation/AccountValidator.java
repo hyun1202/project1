@@ -22,5 +22,5 @@ import java.lang.annotation.Target;
 public @interface AccountValidator {
     String value() default "req";   // 파라미터명 기본값 id=>req 변경
     ElementType type() default ElementType.FIELD;   // id 기본값 parameter=>field 변경
-    String field() default "id";
+    String field() default "uid";
 }

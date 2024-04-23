@@ -1,64 +1,135 @@
 package com.hyun.jobty.global.response;
 
-import com.hyun.jobty.advice.ExceptionAdvice;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hyun.jobty.advice.exception.CustomException;
 import com.hyun.jobty.advice.exception.ErrorCode;
-import com.hyun.jobty.global.file.FileVo;
+import com.hyun.jobty.global.file.dto.FileDto;
+import com.hyun.jobty.util.FileUtil;
+import com.hyun.jobty.util.Util;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-/**
- * 응답 데이터 처리 클래스
- * <pre> 사용 예제:
- *     private final ResponseService responseService;
- *     responseService.getSingleResult(data);
- *     responseService.getListResult(datas);
- * </pre>
- */
-public interface ResponseService {
-    /**
-     * 파일 다운로드 데이터 처리
-     * @param fileVo 파일 데이터
-     * @return ResponseEntity
-     */
-    ResponseEntity<Resource> getFileResponseEntity(FileVo fileVo);
-    /**
-     * 단건 데이터 처리
-     * @param data 단건 데이터
-     * @return 공통 코드, 메시지가 포함된 데이터 리턴
-     */
-    <T> ResponseEntity<SingleResult<T>> getSingleResult(T data);
+@Service
+public class ResponseService {
 
-    /**
-     * 다건 List 데이터 처리
-     * @param <T>
-     * @param data List 형식 데이터
-     * @return ListResult 데이터
-     */
-    <T> ResponseEntity<ListResult<T>> getListResult(List<T> data);
+    private <T> ResponseEntity<T> getResponseEntity(T data){
+        return Util.responseEntityOf(data);
+    }
 
-    /**
-     * 기본 성공 데이터 처리
-     * @return 성공 데이터 리턴
-     */
-    CommonResult getSuccessResult();
+    public ResponseEntity<Resource> getFileResponseEntity(FileDto fileDto){
+        HttpHeaders headers = new HttpHeaders();
+        String oriFileName = "";
+        // 업로드 파일명이 없으면 랜덤으로 생성
+        if (fileDto.getOriFileName().equals("")){
+            oriFileName = Util.random() + "." + fileDto.getExtension();
+        }
+        // 파일 다운로드 헤더 작성
+        String encodedOriginalFileName = UriUtils.encode(oriFileName, StandardCharsets.UTF_8);
+        String contentDisposition = "attachment; filename=\"" + encodedOriginalFileName + "\"";
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition);
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        UrlResource resource;
+        try{
+            //파일 다운로드
+            resource = FileUtil.download(fileDto.getSaveFilePath());
+            return Util.responseEntityOf(resource, headers);
+        }catch (Exception e) {
+            throw new CustomException(ErrorCode.FailedDownloadFile);
+        }
+    }
 
-    /**
-     * 기본 실패 데이터 처리
-     * @return 실패 데이터 리턴
-     */
-    CommonResult getFailResult();
+    
+    public <T> ResponseEntity<SingleResult<T>> getSingleResult(T data) {
+        SingleResult<T> result = new SingleResult<>();
+        result.setData(data);
+        setSuccessResult(result);
+        return this.getResponseEntity(result);
+    }
 
-    CommonResult getFailResult(CommonReason commonReason);
-    CommonResult getFailResult(int code, String msg);
-    /**
-     * 에러코드를 지정하여 실패 데이터 처리
-     * <p>{@link ExceptionAdvice}에서 예외 처리를 위해 이용</p>
-     * @param errorCode 에러코드
-     * @return 에러코드에 해당하는 실패 데이터 리턴
-     */
-    HttpServletResponse setResponseError(HttpServletResponse response, int status, ErrorCode errorCode) throws IOException;
+    
+    public <T> ResponseEntity<ListResult<T>> getListResult(List<T> data){
+        ListResult<T> result = new ListResult<>();
+        result.setData(data);
+        setSuccessResult(result);
+        return this.getResponseEntity(result);
+    }
+
+    
+    public CommonResult getSuccessResult() {
+        CommonResult result = new CommonResult();
+        setSuccessResult(result);
+        return result;
+    }
+
+    
+    public CommonResult getFailResult() {
+        CommonResult result = new CommonResult();
+        setFailResult(result);
+        return result;
+    }
+
+    
+    public CommonResult getFailResult(int code, String msg) {
+        CommonResult result = new CommonResult();
+        setFailResult(result, code, msg);
+        return result;
+    }
+
+    
+    public CommonResult getFailResult(CommonReason commonReason) {
+        CommonResult result = new CommonResult();
+        setFailResult(result, commonReason);
+        return result;
+    }
+
+    
+    public HttpServletResponse setResponseError(HttpServletResponse response, int status, ErrorCode errorCode) throws IOException {
+        ObjectMapper objectMapper= new ObjectMapper();
+        response.setCharacterEncoding("utf-8");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(status);
+        response.getWriter().write(objectMapper.writeValueAsString(CommonResult.builder()
+                .success(false)
+                .code(status)
+                .msg(errorCode.getMsg())
+                .build()));
+        return response;
+    }
+
+    // API 요청 성공 시 응답 모델을 성공 데이터로 세팅
+    private void setSuccessResult(CommonResult result){
+        result.setSuccess(true);
+        result.setCode(CommonCode.SUCCESS.getCode());
+        result.setMsg(CommonCode.SUCCESS.getMsg());
+    }
+
+    // API 요청 실패 시 응답 모델을 실패 데이터로 세팅
+    private void setFailResult(CommonResult result){
+        result.setSuccess(false);
+        result.setCode(CommonCode.FAIL.getCode());
+        result.setMsg(CommonCode.FAIL.getMsg());
+    }
+
+    // API 요청 실패 시 응답 모델을 실패 데이터로 세팅
+    private void setFailResult(CommonResult result, CommonReason commonReason){
+        result.setSuccess(false);
+        result.setCode(commonReason.getCode());
+        result.setMsg(commonReason.getMsg());
+    }
+
+    private void setFailResult(CommonResult result, int code, String msg){
+        result.setSuccess(false);
+        result.setCode(code);
+        result.setMsg(msg);
+    }
 }
