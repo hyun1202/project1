@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
-@Table(name = "comment")
+@Table(name = "post_comment")
 public class Comment extends Timestamped {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_seq")

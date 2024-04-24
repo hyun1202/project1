@@ -51,7 +51,10 @@ public class Post extends Timestamped {
         this.comments = comments;
     }
 
-    public void updatePost(Long menu_seq, PostDto.AddReq updatePost){
-        this.menu.
+    public void updatePost(Long menu_seq, PostDto.AddReq req){
+        this.menu.updatePostMenuSeq(menu_seq);
+        this.thumbnail = req.getThumbnail();
+        this.title = req.getTitle();
+        this.content = req.getContent();
     }
 }

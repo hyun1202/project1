@@ -11,12 +11,12 @@ public class ValidatorDto {
     @Schema(description = "토큰값과 비교할 uid")
     private String uid;
 
-    public String getUid() {
-        return uid;
+    protected ValidatorDto(String uid){
+        this.uid = uid;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public String getUid() {
+        return uid;
     }
 
     /**

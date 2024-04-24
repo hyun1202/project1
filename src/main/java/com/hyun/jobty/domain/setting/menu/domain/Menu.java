@@ -19,7 +19,7 @@ public class Menu extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "menu_seq")
-    private int seq;
+    private Long seq;
     @OneToOne
     @JoinColumn(name = "domain")
     private Setting setting;
@@ -46,7 +46,7 @@ public class Menu extends Timestamped {
     private List<Menu> sub = new ArrayList<>();
 
     @Builder
-    public Menu(int seq, Setting setting, BlogMainCategory mainCategory, String subCategoryName, String name, Long upperSeq, int depth, int sortNo, int groupNo){
+    public Menu(Long seq, Setting setting, BlogMainCategory mainCategory, String subCategoryName, String name, Long upperSeq, int depth, int sortNo, int groupNo){
         this.seq = seq;
         this.setting = setting;
         this.mainCategory = mainCategory;
@@ -60,6 +60,10 @@ public class Menu extends Timestamped {
 
     public void setSortNo(int sortNo) {
         this.sortNo = sortNo;
+    }
+
+    public void updatePostMenuSeq(Long post_seq){
+        this.seq = post_seq;
     }
 
     /**

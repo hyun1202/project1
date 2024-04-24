@@ -17,7 +17,7 @@ public class FileReq extends ValidatorDto {
 
     @Builder
     public FileReq(String uid, Long post_id, List<MultipartFile> multipartFiles){
-        this.setUid(uid);
+        super(uid);
         this.post_id = post_id;
         this.multipartFiles = multipartFiles;
     }

@@ -44,7 +44,7 @@ public class MenuDto {
     @Getter
     public static class Res {
         @Schema(description = "메뉴 번호")
-        int menu_seq;
+        Long menu_seq;
         @Schema(description = "상위 메뉴 번호(소메뉴일 때만 사용)")
         Long upper_menu_seq;
         @Schema(description = "대메뉴 분류 번호(대메뉴일 때만 사용)")
@@ -96,7 +96,7 @@ public class MenuDto {
         @Getter
         public static class Data {
             @Schema(description = "메뉴 번호")
-            int menu_seq;
+            Long menu_seq;
             @Schema(description = "상위 메뉴 번호(소메뉴일 때만 사용)")
             Long upper_menu_seq;
             @Schema(description = "대메뉴에서의 정렬 값")
@@ -155,7 +155,7 @@ public class MenuDto {
     @Getter
     public static class Read {
         @Schema(description = "대메뉴 번호")
-        int menu_seq;
+        Long menu_seq;
         @Schema(description = "대메뉴 분류번호")
         int category_seq;
         @Schema(description = "대메뉴 분류명")
@@ -176,7 +176,7 @@ public class MenuDto {
             this.subs = menu.getSub().stream().map(Sub::new).collect(Collectors.toList());
         }
 
-        public Read(int menu_seq, BlogMainCategory category, String menu_name, int group_no, List<Menu> subs){
+        public Read(Long menu_seq, BlogMainCategory category, String menu_name, int group_no, List<Menu> subs){
             this.menu_seq = menu_seq;
             this.category_name = category.getMainCategoryName();
             this.menu_name = menu_name;
@@ -188,7 +188,7 @@ public class MenuDto {
     @Getter
     public static class Main{
         @Schema(description = "메뉴 번호")
-        int menu_seq;
+        Long menu_seq;
         @Schema(description = "대메뉴 분류 번호(대메뉴일 때만 사용)")
         int main_category_seq;
         @Schema(description = "메뉴명")
@@ -201,7 +201,7 @@ public class MenuDto {
     @Getter
     public static class Sub {
         @Schema(description = "소메뉴 번호")
-        int menu_seq;
+        Long menu_seq;
         @Schema(description = "상위 메뉴 번호(소메뉴일 때만 사용)")
         Long upper_menu_seq;
         @Schema(description = "소메뉴 분류명")

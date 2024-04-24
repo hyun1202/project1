@@ -22,7 +22,9 @@ import java.util.stream.Collectors;
 
 @Tag(name = "블로그 게시글 컨트롤러", description = "")
 @RequiredArgsConstructor
+@RequestMapping("/blog/")
 @RestController
+// 접속 시 해당하는 스킨(html, css, js)을 불러와야함?
 public class BlogController {
     private final MemberService memberService;
     private final BlogService blogService;
@@ -31,7 +33,7 @@ public class BlogController {
     @Operation(summary = "게시글 목록 조회", description = "도메인, 메뉴에 해당하는 메뉴 조회")
     @GetMapping(value = "{domain}/list/{menu_id}")
     public ResponseEntity<ListResult<PostDto>> getPostList(@PathVariable("domain") String domain,
-                                                           @PathVariable("menu_id") int menu_id,
+                                                           @PathVariable("menu_id") Long menu_id,
                                                            PageDto page){
         List<Post> list = blogService.findPostList(PageRequest.of(page.getPage(), page.getSize()), domain, menu_id).getContent();
         List<PostDto> res = list.stream().map(PostDto::new).collect(Collectors.toList());
@@ -77,28 +79,32 @@ public class BlogController {
     @Operation(summary = "게시글 수정", description = "해당 게시글 수정")
     @PutMapping(value = "{domain}/{menu_id}/{post_id}")
     public ResponseEntity<SingleResult<PostDto>> updatePost(@PathVariable String domain,
-                                                            @PathVariable String menu_id,
-                                                            @PathVariable String post_id){
-        return null;
+                                                            @PathVariable Long menu_id,
+                                                            @PathVariable Long post_id,
+                                                            @RequestBody PostDto.AddReq req){
+        PostDto res = PostDto.builder()
+                .post(blogService.updatePost(domain, menu_id, post_id, req))
+                .build();
+        return responseService.getSingleResult(res);
     }
 
     @Operation(summary = "게시글 삭제", description = "해당 게시글 삭제")
     @DeleteMapping(value = "{domain}/{post_id}")
     public ResponseEntity<SingleResult<PostDto>> removePost(@PathVariable String domain,
-                                                            @PathVariable String post_id){
+                                                            @PathVariable Long post_id){
         return null;
     }
 
     @Operation(summary = "게시글 임시저장", description = "해당 게시글 임시저장")
-    @PostMapping(value = "{domain}/{menu_id}")
+    @PostMapping(value = "/{domain}/temp/{menu_id}")
     public ResponseEntity<SingleResult<PostDto>> saveTempPost(@PathVariable String domain,
-                                                            @PathVariable String menu_id){
+                                                            @PathVariable Long menu_id){
         return null;
     }
 
     @Operation(summary = "댓글 저장", description = "해당 게시글에 댓글 저장(비회원의 경우 id, pw 입력)")
     @PostMapping(value = "comment/{post_id}")
-    public ResponseEntity<SingleResult<CommentDto.Res>> addComment(@PathVariable("post_id") int post_id,
+    public ResponseEntity<SingleResult<CommentDto.Res>> addComment(@PathVariable("post_id") Long post_id,
                                                                    @RequestBody CommentDto.AddReq req){
         // 작성자 작성을 위한 member 조회
         // TODO 비회원인 경우도 댓글을 저장할 수 있음

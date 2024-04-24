@@ -48,7 +48,7 @@ public class MenuController {
     @Operation(summary = "메뉴 단건 삭제", description = "도메인에 해당하는 메뉴 삭제")
     @DeleteMapping(value ="/{domain}/{menu_id}")
     @AccountValidator(value = "dto")
-    public ResponseEntity<SingleResult<Integer>> removeMenu(@PathVariable("domain") String domain,
+    public ResponseEntity<SingleResult<Long>> removeMenu(@PathVariable("domain") String domain,
                                                             @PathVariable("menu_id") int menu_id,
                                                             ValidatorDto dto){
         return responseService.getSingleResult(menuService.deleteSingleMenu(domain, menu_id));

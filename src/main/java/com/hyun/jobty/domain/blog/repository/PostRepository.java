@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post, Integer> {
+public interface PostRepository extends JpaRepository<Post, Long> {
     /**
      * 도메인에 해당하는 게시글 조회
      * @param post_seq 게시글 번호
@@ -26,7 +26,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
      * @param domain 도메인
      * @param menu_seq 메뉴번호
      */
-    Page<Post> findAllBySetting_domainAndMenu_seq(Pageable page, String domain, int menu_seq);
+    Page<Post> findAllBySetting_domainAndMenu_seq(Pageable page, String domain, Long menu_seq);
 
     @Query(value = "select a.prev_seq, a.next_seq " +
                 " ,(select title from post where post_seq = a.prev_seq) prev_title " +
@@ -40,5 +40,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 "  and menu_seq = :menu_seq " +
                 "  and post_seq = :post_seq "
             , nativeQuery = true)
-    PrevNextInterface findPrevNextPost(@Param("domain") String domain, @Param("menu_seq") int menu_seq, @Param("post_seq") Long post_seq);
+    PrevNextInterface findPrevNextPost(@Param("domain") String domain, @Param("menu_seq") Long menu_seq, @Param("post_seq") Long post_seq);
 }

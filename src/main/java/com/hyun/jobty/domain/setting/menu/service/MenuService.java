@@ -31,7 +31,7 @@ public class MenuService {
         return menuRepository.findById(seq).orElseThrow(() -> new CustomException(ErrorCode.NotFoundMenu));
     }
 
-    public int deleteSingleMenu(String domain, int seq) {
+    public Long deleteSingleMenu(String domain, int seq) {
         // 게시글 또는 하위 메뉴가 있으면 삭제 불가
         // 하위 메뉴 검사
         if (menuRepository.existsBySetting_DomainAndUpperSeq(domain, seq)){

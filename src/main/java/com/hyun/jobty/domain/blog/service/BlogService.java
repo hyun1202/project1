@@ -39,7 +39,7 @@ public class BlogService{
     private final ViewRepository viewRepository;
     private final LikeRepository likeRepository;
 
-    public Page<Post> findPostList(Pageable page, String domain, int menu_seq) {
+    public Page<Post> findPostList(Pageable page, String domain, Long menu_seq) {
         Page<Post> list = postRepository.findAllBySetting_domainAndMenu_seq(page, domain, menu_seq);
         if (list == null)
             throw new CustomException(ErrorCode.NotFoundPost);
@@ -96,13 +96,13 @@ public class BlogService{
     @Transactional
     public Post updatePost(String domain, Long menu_seq, Long post_seq, PostDto.AddReq req){
         // 게시글 조회
-        Post updatePost = findPost(domain, post_seq);
+        Post post = findPost(domain, post_seq);
         // 게시글 업데이트
-
-        return null;
+        post.updatePost(menu_seq, req);
+        return post;
     }
 
-    public Comment saveComment(int post_seq, String member_uid, CommentDto.AddReq req) {
+    public Comment saveComment(Long post_seq, String member_uid, CommentDto.AddReq req) {
         Post post = postRepository.findById(post_seq).orElseThrow(() -> new CustomException(ErrorCode.NotFoundPost));
         Comment comment = Comment.builder()
                 .post(post)
@@ -118,7 +118,14 @@ public class BlogService{
         return commentRepository.save(comment);
     }
 
-    public PostDto.PrevNextDto findPrevNextPost(String domain, int menu_seq, Long post_seq) {
+    /**
+     * 해당 게시글의 이전, 다음 게시글을 확인한다.
+     * @param domain 도메인
+     * @param menu_seq 메뉴 번호
+     * @param post_seq 게시글 번호
+     * @return 이전, 다음 게시글 정보
+     */
+    public PostDto.PrevNextDto findPrevNextPost(String domain, Long menu_seq, Long post_seq) {
         return new PostDto.PrevNextDto(postRepository.findPrevNextPost(domain, menu_seq, post_seq));
     }
 

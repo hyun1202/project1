@@ -27,7 +27,7 @@ public class BlogServiceTest {
     void readPostPrevNextTest(){
         //given
         String domain = "0157942";
-        int menu_seq = 1;
+        Long menu_seq = 1L;
         Long post_seq = 2L;
         //when
         PostDto.PrevNextDto prevNext = blogService.findPrevNextPost(domain, menu_seq, post_seq);
@@ -72,7 +72,7 @@ public class BlogServiceTest {
         Long post_seq = 2L;
         String id = "apfhd02579@naver.com";
         LikeDto likeDto = new LikeDto();
-        likeDto.setUid(id);
+//        likeDto.setUid(id);
         //when
         blogService.postLikeSaveOrDelete(post_seq, likeDto);
         //then
