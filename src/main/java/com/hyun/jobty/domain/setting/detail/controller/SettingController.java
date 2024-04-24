@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.annotation.ElementType;
 
-@Tag(name = "설정 컨트롤러", description = "도메인 등 정보 설정을 위한 컨트롤러")
+@Tag(name = "설정 컨트롤러", description = "도메인 등 정보 설정 및 조회 - 도메인 조회 url변경, Last Update 2024.04.24")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/setting/")
@@ -24,11 +24,11 @@ public class SettingController {
     private final SettingService settingService;
     private final ResponseService responseService;
 
-    @Operation(summary = "도메인 조회", description = "uid로 된 도메인을 조회합니다.")
+    @Operation(summary = "설정 정보 조회", description = "uid로 된 도메인을 조회합니다.(uid와 토큰의 uid를 확인)")
     @AccountValidator(type = ElementType.PARAMETER)
     @ApiErrorCode(ErrorCode.DomainNotFound)
-    @GetMapping("/domain/{id}")
-    public ResponseEntity<SingleResult<SettingDto>> findDomainById(@PathVariable("id") String uid){
+    @GetMapping("/domain")
+    public ResponseEntity<SingleResult<SettingDto>> findDomainById(@RequestParam("uid") String uid){
         return responseService.getSingleResult(
                 SettingDto.builder()
                         .setting(settingService.findByMemberUid(uid))

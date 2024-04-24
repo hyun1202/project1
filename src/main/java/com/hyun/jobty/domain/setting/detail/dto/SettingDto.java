@@ -57,7 +57,7 @@ public class SettingDto {
         }
     }
 
-    @Getter
+    @Getter @NoArgsConstructor
     public static class DomainReq extends ValidatorDto {
         @NotNull
         private String domain;
