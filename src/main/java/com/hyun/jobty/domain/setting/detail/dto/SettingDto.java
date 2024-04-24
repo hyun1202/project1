@@ -4,8 +4,10 @@ import com.hyun.jobty.domain.setting.detail.domain.Setting;
 import com.hyun.jobty.global.accountValidator.dto.ValidatorDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -74,5 +76,11 @@ public class SettingDto {
         public DomainRes(Setting setting){
             this.domain = setting.getDomain();
         }
+    }
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder @Getter
+    public static class FindDomain{
+        private String domain;
     }
 }

@@ -102,23 +102,6 @@ public class MemberDto {
         }
     }
 
-    /**
-     * 중복 아이디 체크 데이터
-     */
-    @Getter
-    public static class Check{
-        @Schema(description = "아이디 중복 여부")
-        private boolean duplicate;
-        @Schema(description = "중복 확인 메세지", example = "사용 가능한 아이디입니다.")
-        private String msg;
-
-        @Builder
-        public Check(boolean duplicate, String msg){
-            this.duplicate = duplicate;
-            this.msg = msg;
-        }
-    }
-
     @Getter
     public static class FindReq{
         @Pattern(regexp = "[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}$", message = "올바른 이메일 형태가 아니거나 아이디에 허용된 특수문자(-_.) 외 문자열이 입력되었습니다.")

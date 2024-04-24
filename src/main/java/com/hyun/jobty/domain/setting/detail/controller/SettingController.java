@@ -5,6 +5,7 @@ import com.hyun.jobty.conf.swagger.annotation.ApiErrorCode;
 import com.hyun.jobty.domain.setting.detail.dto.SettingDto;
 import com.hyun.jobty.domain.setting.detail.service.SettingService;
 import com.hyun.jobty.global.accountValidator.annotation.AccountValidator;
+import com.hyun.jobty.global.dto.CheckDto;
 import com.hyun.jobty.global.response.ResponseService;
 import com.hyun.jobty.global.response.SingleResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,5 +55,9 @@ public class SettingController {
                 .setting(settingService.updateDetailSetting(domain, req))
                 .build();
         return responseService.getSingleResult(res);
+    }
+    @PostMapping("/domain/check")
+    public ResponseEntity<SingleResult<CheckDto>> checkDomain(@RequestBody SettingDto.FindDomain req){
+        return responseService.getSingleResult(settingService.checkDomainDuplicate(req));
     }
 }

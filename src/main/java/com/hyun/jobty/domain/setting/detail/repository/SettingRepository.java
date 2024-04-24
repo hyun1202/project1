@@ -11,4 +11,5 @@ public interface SettingRepository extends JpaRepository<Setting, String> {
     Optional<Setting> findByDomain(String domain);
     Optional<Setting> findByMember_Uid(String uid);
     boolean existsByMember_Uid(String uid);
+    boolean existsByDomain(String domain);
 }

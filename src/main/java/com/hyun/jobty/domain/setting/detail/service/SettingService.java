@@ -6,6 +6,8 @@ import com.hyun.jobty.domain.setting.detail.domain.Setting;
 import com.hyun.jobty.domain.setting.detail.dto.SettingDto;
 import com.hyun.jobty.domain.setting.detail.repository.SettingRepository;
 import com.hyun.jobty.domain.setting.template.domain.Template;
+import com.hyun.jobty.global.dto.CheckDto;
+import com.hyun.jobty.global.response.CommonCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,15 @@ public class SettingService {
      */
     public Setting findByMemberUid(String uid){
         return settingRepository.findByMember_Uid(uid).orElseThrow(() -> new CustomException(ErrorCode.DomainNotFound));
+    }
+
+    /**
+     * 해당하는 도메인이 존재한지 확인한다.
+     * @param domain 도메인
+     * @return 도메인 존재 여부
+     */
+    public boolean existsByDomain(String domain){
+        return settingRepository.existsByDomain(domain);
     }
 
     /**
@@ -78,5 +89,18 @@ public class SettingService {
         // 설정 정보 업데이트
         setting.updateBlogInfo(req);
         return setting;
+    }
+
+    public CheckDto checkDomainDuplicate(SettingDto.FindDomain req){
+        boolean duplicate = false;
+        String msg = CommonCode.AvailableDomain.getMsg();
+        if (existsByDomain(req.getDomain())){
+            msg = CommonCode.DuplicatedDomain.getMsg();
+            duplicate = true;
+        }
+        return CheckDto.builder()
+                .duplicate(duplicate)
+                .msg(msg)
+                .build();
     }
 }

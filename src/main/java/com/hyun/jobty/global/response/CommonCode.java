@@ -13,7 +13,8 @@ public enum CommonCode implements BaseCode{
     EmailNotFound(1002, "해당하는 이메일을 찾을 수 없습니다.", "해당하는 이메일을 찾을 수 없습니다."),
     EmailExists(1003, "가입되어 있는 이메일입니다.", "가입되어 있는 이메일입니다."),
     SendConfirmEMail(1004, "해당 아이디로 확인 메일 발송하였습니다. 1분 후 메일을 확인해주세요.", "해당 아이디로 확인 메일 발송하였습니다. 메일을 확인해주세요."),
-
+    AvailableDomain(2000, "사용 가능한 도메인입니다.", "중복된 도메인이 없습니다."),
+    DuplicatedDomain(2001, "중복된 도메인입니다. 다른 도메인을 입력해주세요.", "중복된 도메인입니다.")
     ;
 
     private int code;

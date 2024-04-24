@@ -10,6 +10,7 @@ import com.hyun.jobty.domain.member.dto.TokenRes;
 import com.hyun.jobty.domain.member.service.MemberService;
 import com.hyun.jobty.domain.member.service.TokenService;
 import com.hyun.jobty.global.accountValidator.annotation.AccountValidator;
+import com.hyun.jobty.global.dto.CheckDto;
 import com.hyun.jobty.global.mail.model.Mail;
 import com.hyun.jobty.global.mail.model.UrlParam;
 import com.hyun.jobty.global.mail.service.MailSenderService;
@@ -128,7 +129,7 @@ public class MemberController {
 
     @PostMapping("/account/check/id")
     @Operation(summary = "중복 아이디 확인", description = "id에 해당하는 회원 검색 후 중복 아이디 여부 리턴 및 계정 확인")
-    public ResponseEntity<SingleResult<MemberDto.Check>> checkId(@RequestBody @Valid
+    public ResponseEntity<SingleResult<CheckDto>> checkId(@RequestBody @Valid
                                                                  MemberDto.FindReq req){
         return responseService.getSingleResult(memberService.checkDuplicateId(req.getEmail()));
     }

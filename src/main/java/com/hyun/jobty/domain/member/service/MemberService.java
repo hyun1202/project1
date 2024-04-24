@@ -8,6 +8,7 @@ import com.hyun.jobty.domain.member.domain.Status;
 import com.hyun.jobty.domain.member.domain.TokenType;
 import com.hyun.jobty.domain.member.dto.MemberDto;
 import com.hyun.jobty.domain.member.repository.MemberRepository;
+import com.hyun.jobty.global.dto.CheckDto;
 import com.hyun.jobty.global.response.CommonCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -108,7 +109,7 @@ public class MemberService {
      * @param member_id
      */
     
-    public MemberDto.Check checkDuplicateId(String member_id) {
+    public CheckDto checkDuplicateId(String member_id) {
         boolean duplicate = false;
         String msg = CommonCode.AvailableId.getMsg();
         if (findDuplicateId(member_id)) {
@@ -116,7 +117,7 @@ public class MemberService {
             duplicate = true;
             msg = CommonCode.DuplicatedId.getMsg();
         }
-        return MemberDto.Check.builder()
+        return CheckDto.builder()
                 .duplicate(duplicate)
                 .msg(msg)
                 .build();
