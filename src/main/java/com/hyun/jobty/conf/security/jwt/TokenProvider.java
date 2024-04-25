@@ -76,6 +76,30 @@ public class TokenProvider{
         return false;
     }
 
+    /**
+     * access 토큰이 만료되었으나, 토큰의 유효성을 검증하기 위해 사용한다.
+     * 만료된 JWT토큰은 정상적이라고 판단한다.
+     * @param accessToken access 토큰
+     * @return 검증 여부
+     */
+    public boolean validPreAccessToken(String accessToken){
+        try{
+            if (accessToken == null || accessToken.equals(""))
+                return false;
+            Jwts.parser().verifyWith(jwtProperties.getSecretKey()).build().parseSignedClaims(accessToken);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.info("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            return true;
+        } catch (UnsupportedJwtException e) {
+            log.info("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            log.info("JWT 토큰이 잘못되었습니다.");
+        }
+        return false;
+    }
+
     public Authentication getAuthentication(String token){
         Claims claims = getClaims(token);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));

@@ -6,11 +6,16 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum TokenType {
-    login(60 * 60 * 1000L, true, ""),
-    signup(60 * 30 * 1000L, false, "signup"),
-    change(60 * 30 * 1000L, false, "account/change/pwd"),
+    // refresh 토큰 만료시간으로 설정.
+    signin(60 * 60L * 12, true, ""),
+    signup(60 * 30L , false, "signup"),
+    change(60 * 30L, false, "account/change/pwd"),
     ;
     private Long exp;
     private boolean refreshTokenRequired;
     private String url;
+
+    public void setLoginExp(Long exp) {
+        this.exp = exp;
+    }
 }

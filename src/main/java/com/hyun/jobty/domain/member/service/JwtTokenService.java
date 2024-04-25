@@ -4,7 +4,7 @@ import com.hyun.jobty.conf.security.jwt.TokenProvider;
 import com.hyun.jobty.domain.member.domain.Member;
 import com.hyun.jobty.domain.member.domain.Token;
 import com.hyun.jobty.domain.member.domain.TokenType;
-import com.hyun.jobty.domain.member.dto.MemberDto;
+import com.hyun.jobty.domain.member.dto.TokenDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,21 +19,32 @@ public class JwtTokenService {
      * @param dto 유저정보
      * @return 유저정보를 포함한 토큰값 리턴
      */
-    public Token createJwtToken(String token_id, MemberDto dto){
+    public Token createJwtToken(String token_id, TokenDto dto){
         Member member = Member.builder()
                 .uid(dto.getUid())
-                .email(dto.getEmail())
                 .build();
         String accessToken = getAccessToken(member);
         String refreshToken = getRefreshToken(member);
         return Token.builder()
                 .id(token_id)
                 .uid(dto.getUid())
-                .email(dto.getEmail())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .exp(TokenType.login.getExp() * 1000L)
+                .exp(TokenType.signin.getExp())
                 .build();
+    }
+
+    /**
+     * jwt토큰을 업데이트(재발급)한다.
+     * @param token 토큰 정보
+     */
+    public void reissueJwtToken(Token token){
+        Member member = Member.builder()
+                .uid(token.getUid())
+                .build();
+        String accessToken = getAccessToken(member);
+        String refreshToken = getRefreshToken(member);
+        token.updateToken(accessToken, refreshToken, TokenType.signin.getExp());
     }
 
     /**
@@ -56,12 +67,26 @@ public class JwtTokenService {
 
     /**
      * JWT 토큰 검증
+     * @param token 토큰
+     * @return JWT 토큰 검증 여부
+     */
+
+    public boolean validJwtToken(String token){
+        if (!tokenProvider.validToken(token)){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 만료된 access token을 위한 토큰 검증
+     * 재발급을 위해 검사하는 access 토큰은 만료된 토큰은 정상이다.
      * @param accessToken 토큰
      * @return JWT 토큰 검증 여부
      */
 
-    public boolean validJwtToken(String accessToken){
-        if (!tokenProvider.validToken(accessToken)){
+    public boolean validPreAccessToken(String accessToken){
+        if (!tokenProvider.validPreAccessToken(accessToken)){
             return false;
         }
         return true;

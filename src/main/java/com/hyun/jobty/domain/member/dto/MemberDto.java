@@ -93,10 +93,10 @@ public class MemberDto {
         @Schema(description = "사용자 정보")
         private MemberDto member;
         @Schema(description = "토큰 정보")
-        private TokenRes token;
+        private TokenDto.Token token;
 
         @Builder
-        public LoginRes(MemberDto member, TokenRes token){
+        public LoginRes(MemberDto member, TokenDto.Token token){
             this.member = member;
             this.token = token;
         }

@@ -3,10 +3,9 @@ package com.hyun.jobty.domain.member.controller;
 import com.hyun.jobty.advice.exception.ErrorCode;
 import com.hyun.jobty.conf.swagger.annotation.ApiErrorCode;
 import com.hyun.jobty.domain.member.domain.Member;
-import com.hyun.jobty.domain.member.domain.Token;
 import com.hyun.jobty.domain.member.domain.TokenType;
 import com.hyun.jobty.domain.member.dto.MemberDto;
-import com.hyun.jobty.domain.member.dto.TokenRes;
+import com.hyun.jobty.domain.member.dto.TokenDto;
 import com.hyun.jobty.domain.member.service.MemberService;
 import com.hyun.jobty.domain.member.service.TokenService;
 import com.hyun.jobty.global.accountValidator.annotation.AccountValidator;
@@ -27,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.annotation.ElementType;
 import java.util.List;
 
-@Tag(name = "로그인", description = "로그인 API, Last update: 2024.04.15 id 관련 http메서드 및 json 데이터 변경")
+@Tag(name = "로그인", description = "로그인 API, Last update: 2024.04.25 토큰 관련 로직 변경으로 ")
 @RequestMapping("/")
 @RequiredArgsConstructor
 @RestController
@@ -37,11 +36,11 @@ public class MemberController {
     private final MailSenderService mailSenderService;
     private final TokenService tokenService;
 
-    @Operation(summary = "계정 정보 확인(테스트)", description = "로그인 계정에 해당하는 계정 정보 리턴 (토큰 값과 id값 비교 후 실행)")
+    @Operation(summary = "계정 정보 확인(테스트)", description = "로그인 계정에 해당하는 계정 정보 리턴 (토큰 값과 uid값 비교 후 실행)")
     @GetMapping("/account/user")
     @AccountValidator(type = ElementType.PARAMETER)
-    public ResponseEntity<SingleResult<MemberDto>> getMember(@RequestParam String id){
-        MemberDto member = MemberDto.builder().member(memberService.findByEmail(id)).build();
+    public ResponseEntity<SingleResult<MemberDto>> getMember(@RequestParam String uid){
+        MemberDto member = MemberDto.builder().member(memberService.findByMemberUid(uid)).build();
         return responseService.getSingleResult(member);
     }
 
@@ -55,9 +54,9 @@ public class MemberController {
                 .member(memberService.signin(req))
                 .build();
         // 2. 토큰 정보
-        TokenRes token = TokenRes.builder()
-                .token(tokenService.createJwtToken(member))
-                .build();
+        TokenDto tokenDto = new TokenDto(member.getUid(), member.getEmail());
+        // 토큰 발급
+        TokenDto.Token token = new TokenDto.Token(tokenService.createJwtToken(tokenDto));
         MemberDto.LoginRes result = MemberDto.LoginRes.builder()
                 .member(member)
                 .token(token)
@@ -80,13 +79,13 @@ public class MemberController {
      * 메일 전송
      * @param token 토큰
      */
-    private void sendMail(String url, Token token){
+    private void sendMail(String url, TokenDto token){
         mailSenderService.send(
                 Mail.builder()
                         .receiverMail(token.getEmail())
                         .subject("이메일 주소 인증")
                         .url(url)
-                        .urlParams(List.of(new UrlParam("token_id", token.getId()), new UrlParam("token", token.getAccessToken())))
+                        .urlParams(List.of(new UrlParam("token_id", token.getToken_id()), new UrlParam("token", token.getAccessToken())))
                         .build()
         );
     }
@@ -96,8 +95,7 @@ public class MemberController {
     @PostMapping("/account/mail-resend")
     public ResponseEntity<SingleResult<String>> resendMail(@RequestParam @NotNull TokenType type,
                                                            @RequestBody @Valid MemberDto.FindReq req){
-        // 1.메일 발송 여부 확인 (토큰 확인)
-        // TODO 이전에 발송된 회원가입 주소는 왜 클릭이 되는가...?
+        // 1.메일 발송 여부 확인
         memberService.checkAccountStatus(req.getEmail(), type);
         // 2. 토큰 생성 및 메일 전송
         sendMail(type.getUrl(), tokenService.createToken(req.getEmail(), type));

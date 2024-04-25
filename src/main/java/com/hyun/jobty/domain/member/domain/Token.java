@@ -12,7 +12,6 @@ public class Token {
     @Id
     private String id;
     private String uid;
-    private String email;
     private String accessToken;
     //login일 때만 사용
     private String refreshToken;
@@ -20,18 +19,18 @@ public class Token {
     private Long exp;
 
     @Builder
-    public Token(String id, String uid,String email, String accessToken, String refreshToken, Long exp){
+    public Token(String id, String uid, String accessToken, String refreshToken, Long exp){
         this.id = id;
         this.uid = uid;
-        this.email = email;
         this.accessToken= accessToken;
         this.refreshToken = refreshToken;
         this.exp = exp;
     }
 
-    public void updateToken(String accessToken, String refreshToken){
+    public void updateToken(String accessToken, String refreshToken, Long exp){
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+        this.exp = exp;
     }
 
 

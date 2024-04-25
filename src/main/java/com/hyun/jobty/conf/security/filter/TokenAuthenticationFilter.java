@@ -42,10 +42,10 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
         log.debug("token: {}", token);
         if (tokenProvider.validToken(token)) {
             // 토큰 db와 검사
-            log.debug("token_id: {}", tokenProvider.getMemberEmail(token));
-            String tokenId = tokenProvider.getMemberEmail(token);
-            if (tokenId != null) {
-                if (tokenService.validJwtToken(tokenId, token)) {
+            String reqUid = tokenProvider.getMemberUid(token);
+            log.debug("token_id: {}", reqUid);
+            if (reqUid != null) {
+                if (tokenService.validJwtToken(reqUid, token)) {
                     Authentication authentication = tokenProvider.getAuthentication(token);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }

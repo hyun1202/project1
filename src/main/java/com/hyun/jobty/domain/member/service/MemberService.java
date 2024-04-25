@@ -68,8 +68,6 @@ public class MemberService {
         // 계정 인증 여부 확인
         if (!member.isTemporaryAccount(member.getStatus()))
             throw new CustomException(ErrorCode.AccountActivated);
-        // 토큰 생성 여부 확인
-        tokenService.checkByTokenId(email, type);
         return member;
     }
 
@@ -134,7 +132,8 @@ public class MemberService {
     }
 
     /**
-     * 비밀번호 변경을 위해 토큰 체크 및 비밀번호 변경
+     * 비회원 비밀번호 찾기 로직
+     * 비밀번호 변경은 본인인증을 위해 이메일로 전송된 토큰을 포함해야 비밀번호 변경이 진행되므로 토큰 체크 및 비밀번호 변경을 한다.
      * @param token_id 아이디
      * @param token 토큰
      * @param req 변경할 비밀번호 내용
@@ -147,7 +146,8 @@ public class MemberService {
         // 토큰 검증
         if (!tokenService.validToken(token_id, token, TokenType.change))
             throw new CustomException(ErrorCode.UnexpectedToken);
-        Member member = findByEmail(tokenService.findByTokenId(token_id).getEmail());
+        //
+        Member member = findByMemberUid(tokenService.findByTokenId(token_id).getUid());
         // 비밀번호 업데이트
         member.updatePassword(bCryptPasswordEncoder.encode(req.getPwd()));
         // 사용한 토큰은 재사용 못하도록 삭제
@@ -169,7 +169,7 @@ public class MemberService {
         if (!tokenService.validToken(token_id, token, TokenType.signup))
             throw new CustomException(ErrorCode.TokenUserNotFound);
         // 토큰에 해당하는 회원 가져오기
-        Member member = findByEmail(tokenService.findByTokenId(token_id).getEmail());
+        Member member = findByEmail(tokenService.getIdByTokenId(token_id));
         // 계정 활성화
         member.memberActivate();
         // 토큰 확인 완료하였으므로 토큰 삭제
@@ -237,7 +237,7 @@ public class MemberService {
     
     public String signout(String member_id) {
         // 로그인 토큰 삭제
-        tokenService.findTokenIdAndDeleteToken(member_id, TokenType.login);
+        tokenService.findTokenIdAndDeleteToken(member_id, TokenType.signin);
         return member_id;
     }
 
