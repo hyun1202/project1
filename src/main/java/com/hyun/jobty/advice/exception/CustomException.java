@@ -9,7 +9,7 @@ public class CustomException extends RuntimeException{
     public CustomException(ErrorCode errorCode){
         super(errorCode.getRemark());
         this.errorCode = errorCode;
-        log.info("ExceptionMethod: {}", getExceptionMethod());
+        log.info("ExceptionMethod: \\u001B[36m{}\\u001B[36m", getExceptionMethod());
         log.info("ErrorCode: {}, ErrorMsg: {}", errorCode.getCode(), errorCode.getMsg());
     }
     public String getExceptionMethod(){
